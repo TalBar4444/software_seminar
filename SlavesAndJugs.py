@@ -14,7 +14,7 @@ class SlavesAndJugs(tk.Tk):
         self.canvas = canvas
         self.create_gui(self.canvas)
         self.slaves_num = 8
-        self.jugs_num = 240
+        self.jugs_num = 255
         self.lines = 8
         self.column = 30
         self._build_widgets()
@@ -44,8 +44,8 @@ class SlavesAndJugs(tk.Tk):
         ttk.Separator(self.options_frame, orient="horizontal").pack(fill="x", pady=10)
 
         # Add a label and entry widget for the number of jugs
-        self.jugs_label = ttk.Label(self.options_frame, text="Number of slaves 1-8:")
-        self.jugs_label.pack(pady=5)
+        self.slaves_label = ttk.Label(self.options_frame, text="Number of slaves 1-8:")
+        self.slaves_label.pack(pady=5)
         self.slaves_entry = ttk.Entry(self.options_frame, width=10)
         self.slaves_entry.pack(pady=5)
 
@@ -54,7 +54,7 @@ class SlavesAndJugs(tk.Tk):
 
         ttk.Separator(self.options_frame, orient="horizontal").pack(fill="x", pady=10)
 
-        self.jugs_label = ttk.Label(self.options_frame, text="Number of jugs 1-240:")
+        self.jugs_label = ttk.Label(self.options_frame, text="Number of jugs 1-255:")
         self.jugs_label.pack(pady=5)
         self.jugs_entry = ttk.Entry(self.options_frame, width=10)
         self.jugs_entry.pack(pady=5)
@@ -102,8 +102,19 @@ class SlavesAndJugs(tk.Tk):
                 self.jugs.append(jug)
 
     def update_jugs(self):
-            self.jugs_num = int(self.jugs_entry.get())
+        self.jugs_entry.config(foreground='black')
+        self.jugs_label.config(foreground='black')
+        input_jugs = self.jugs_entry.get()
+        if(not input_jugs.isdigit() or int(input_jugs)<1 or int(input_jugs)>255):
+            self.jugs_entry.config(foreground='red')
+            self.jugs_label.config(foreground='red')
+            print("ERROR")
+            return
+
+        else:
+            self.jugs_num = int(input_jugs)
             self.slaves_num = int(math.log2(self.jugs_num)) + 1
+
             if int(self.jugs_entry.get()) <= 30:
                 self.lines = 1
                 self.column = int(self.jugs_entry.get())
@@ -119,23 +130,31 @@ class SlavesAndJugs(tk.Tk):
             self._create_animation()
 
     def update_slaves(self):
-
-        self.slaves_num = int(self.slaves_entry.get())
-        self.jugs_num = 2**self.slaves_num - 1
-        if int(self.jugs_num) <= 30:
-            self.lines = 1
-            self.column = int(self.jugs_num)
+        self.slaves_entry.config(foreground='black')
+        self.slaves_label.config(foreground='black')
+        input_slaves = self.slaves_entry.get()
+        if (not input_slaves.isdigit() or int(input_slaves) < 1 or int(input_slaves) > 8):
+            self.slaves_entry.config(foreground='red')
+            self.slaves_label.config(foreground='red')
+            print("ERROR")
+            return
         else:
-            self.column = 30
-            if self.jugs_num % 30 == 0:
-                self.lines = self.jugs_num // 30
+            self.slaves_num = int(input_slaves)
+            self.jugs_num = 2**self.slaves_num - 1
+            if int(self.jugs_num) <= 30:
+                self.lines = 1
+                self.column = int(self.jugs_num)
             else:
-                self.lines = self.jugs_num // 30 + 1
+                self.column = 30
+                if self.jugs_num % 30 == 0:
+                    self.lines = self.jugs_num // 30
+                else:
+                    self.lines = self.jugs_num // 30 + 1
 
-        print(self.jugs_num)
-        self.slaves_entry.delete(0, 'end')
-        self.canvas_jugs.forget()
-        self._create_animation()
+            print(self.jugs_num)
+            self.slaves_entry.delete(0, 'end')
+            self.canvas_jugs.forget()
+            self._create_animation()
 
 
 
@@ -165,8 +184,8 @@ class SlavesAndJugs(tk.Tk):
                 text_color = "green"
                 num_text = "0"
                 alive_status = "Alive"
-            x_pos = 40 + i * (self.jug_width + self.spacing + 20)
-            y_pos = 370
+            x_pos = 410 + i * (self.jug_width + self.spacing + 20)
+            y_pos = 390
             self.canvas_jugs.create_text(x_pos, y_pos, text=f"Slave {self.slaves_num - i}", fill=text_color,
                                     tags=("slave",))
             self.canvas_jugs.create_text(x_pos, y_pos + 20, text=num_text, fill=text_color, tags=("slave",))

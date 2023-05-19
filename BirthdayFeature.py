@@ -1,4 +1,5 @@
 import tkinter as tk
+import pygame
 from tkinter import ttk
 from random import randint
 import math
@@ -67,10 +68,17 @@ class BirthdayFeature(tk.Tk):
         self.chart_frame.place(relx=0.5, rely=0.4, anchor="center")
 
     def result(self, result):
+        pygame.mixer.init()
+        pygame.mixer.music.load("music/Happy_Birthday.mp3")
+        pygame.mixer.music.play()  # Play the music sound
         if result == 0:
             self.show_result('impossible date !')
         else:
             self.show_result(f"The date of your birthday is: {result}")
+
+
+
+
 
     def btnYes_click(self):
         # choose 0 = no, 1= yes
@@ -109,6 +117,7 @@ class BirthdayFeature(tk.Tk):
         self.btn_back.place(relx=0.5, rely=0.6, anchor="center")
 
     def btn_start_again(self):
+        pygame.mixer.music.stop()
         self.canvas.pack_forget()
         self.result_lbl.place_forget()
         self.btn_start_again.place_forget()
@@ -120,6 +129,7 @@ class BirthdayFeature(tk.Tk):
         self.place_widgets_in_birthday_page()
 
     def btn_back_clicked(self):
+        pygame.mixer.music.stop()
         self.result_lbl.place_forget()
         self.btn_start_again.place_forget()
         self.btn_back.place_forget()
