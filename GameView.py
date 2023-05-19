@@ -60,7 +60,10 @@ class GameView:
     def back_to_options(self):
         self.create_gui(self.my_gui)
         self.birthday_canvas.pack_forget()
-        self.slaves_canvas.pack_forget()
+        self.slaves_canvas.destroy()
+        self.slaves_canvas = tk.Canvas(self.root, width=self.root.winfo_screenwidth(),
+                                       height=self.root.winfo_screenheight())
+        self.slaves_canvas.create_image(0, 0, image=self.base_bg, anchor="nw")
         self.my_gui.create_image(0, 0, image=self.base_bg, anchor="nw")
         self.my_gui.create_text(350, 100, text="Choose one option", fill="white", font=("Helvetica", 30), anchor="nw",
                                 justify="left")
@@ -75,7 +78,7 @@ class GameView:
                                      highlightbackground="orange",
                                      relief="raised", bd=10, padx=10, pady=16, font=('Sans Serif', 20, 'bold'),
                                      image=self.slaves, compound='bottom',
-                                     command=lambda: [self.my_gui.pack_forget(), self.make_slaves_grid(),
+                                     command=lambda: [self.my_gui.pack_forget(), self.create_gui(self.slaves_canvas),
                                                       self.playSlavesGame()])
         # self.birthday_canvas.pack_forget()
         # self.slaves_canvas.pack_forget()

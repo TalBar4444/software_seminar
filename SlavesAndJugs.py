@@ -119,6 +119,7 @@ class SlavesAndJugs(tk.Tk):
             self._create_animation()
 
     def update_slaves(self):
+
         self.slaves_num = int(self.slaves_entry.get())
         self.jugs_num = 2**self.slaves_num - 1
         if int(self.jugs_num) <= 30:
@@ -130,10 +131,13 @@ class SlavesAndJugs(tk.Tk):
                 self.lines = self.jugs_num // 30
             else:
                 self.lines = self.jugs_num // 30 + 1
+
         print(self.jugs_num)
-        self.slaves_entry.delete(0,'end')
+        self.slaves_entry.delete(0, 'end')
         self.canvas_jugs.forget()
         self._create_animation()
+
+
 
     def reset_jugs(self):
         for i, jug in enumerate(self.jugs):
@@ -169,7 +173,8 @@ class SlavesAndJugs(tk.Tk):
             self.canvas_jugs.create_text(x_pos, y_pos + 40, text=alive_status, fill=text_color, tags=("slave",))
 
     def back_to_options(self):
-        self.lbl_result.place_forget()
-        self.binary_label.place_forget()
-        self.canvas_jugs.place_forget()
+        self.lbl_result.destroy
+        self.binary_label.destroy
+        self.canvas.destroy()
+        self.canvas_jugs.destroy()
         self.game_view.back_to_options()
