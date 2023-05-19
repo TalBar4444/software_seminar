@@ -25,6 +25,7 @@ class SlavesAndJugs(tk.Tk):
         new_canvas.pack(fill="both", expand=True)
 
     def _build_widgets(self):
+        self.create_gui(self.canvas)
         self.lbl_title = ttk.Label(self.canvas, text="Slaves & Jugs", font=("Arial", 24))
         self.lbl_title.pack(pady=20)
 
@@ -168,4 +169,7 @@ class SlavesAndJugs(tk.Tk):
             self.canvas_jugs.create_text(x_pos, y_pos + 40, text=alive_status, fill=text_color, tags=("slave",))
 
     def back_to_options(self):
+        self.lbl_result.place_forget()
+        self.binary_label.place_forget()
+        self.canvas_jugs.place_forget()
         self.game_view.back_to_options()
