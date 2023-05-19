@@ -26,7 +26,7 @@ class SlavesAndJugs(tk.Tk):
 
     def _build_widgets(self):
         self.create_gui(self.canvas)
-        self.lbl_title = ttk.Label(self.canvas, text="Slaves & Jugs", font=("Arial", 24))
+        self.lbl_title = ttk.Label(self.canvas, text="The poisoned jug", font=("Arial", 24))
         self.lbl_title.pack(pady=20)
 
         self.btn_start = ttk.Button(self.canvas, text="Find the Poisoned Jug", command=self.find_poisoned_jug)
@@ -41,7 +41,7 @@ class SlavesAndJugs(tk.Tk):
         self.options_frame = ttk.Frame(self.canvas)
         self.options_frame.pack(side="left", padx=10)
 
-        ttk.Separator(self.options_frame, orient="horizontal").pack(fill="x", pady=10)
+        #ttk.Separator(self.options_frame, orient="horizontal").pack(fill="x", pady=10)
 
         # Add a label and entry widget for the number of jugs
         self.slaves_label = ttk.Label(self.options_frame, text="Number of slaves 1-8:")

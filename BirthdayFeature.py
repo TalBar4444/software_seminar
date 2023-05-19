@@ -77,9 +77,6 @@ class BirthdayFeature(tk.Tk):
             self.show_result(f"The date of your birthday is: {result}")
 
 
-
-
-
     def btnYes_click(self):
         # choose 0 = no, 1= yes
         if self.round <= 5:

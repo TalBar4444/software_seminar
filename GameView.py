@@ -10,7 +10,7 @@ class GameView:
         self.root.wm_attributes("-topmost", 1)
         self.topLbl = None
         # self.slaves = SlavesAndJugs
-        self.root.title("my gui")
+        self.root.title("Software Engineering Seminar")
         self.root.geometry("1000x700")
 
         self.base_bg = tk.PhotoImage(file="images/background.png")
