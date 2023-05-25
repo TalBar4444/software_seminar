@@ -1,27 +1,34 @@
+import time
 import tkinter as tk
-from tkinter import ttk
 from random import randint
 import math
-import time
+from tkinter.font import Font
 
 class SlavesAndJugs(tk.Tk):
     def __init__(self, canvas, game_view):
-        self.image = None
         self.animated_image = None
         self.game_view = game_view
         #super().__init__()
         #self.root = tk.Tk
         # self.root.title("Slaves & Jugs")
         # self.root.geometry("1000x700")
-        self.base_bg = tk.PhotoImage(file="images/background.png")
+        self.base_bg = tk.PhotoImage(file="images/slavesBG.png")
+        self.img_back_to_menu = tk.PhotoImage(file="images/back.png")
         self.canvas = canvas
         self.create_gui(self.canvas)
-        self.slaves_num = 8
-        self.jugs_num = 255
-        self.lines = 8
-        self.column = 30
+        self.slaves_num = 10
+        self.jugs_num = 1000
+        self.lines = 20
+        self.column = 50
+        self.dead_slave_txt = None
+        self.alive_slave_txt = None
+        self.slave_num_txt = None
         self._build_widgets()
-        self._create_animation()
+        self.speed = 2
+        # self._create_animation()
+        self.font_size = 10
+        self.bold_font = Font(weight="bold", size=self.font_size)
+        self.count_dead =0
 
     @staticmethod
     def create_gui(new_canvas):
@@ -29,64 +36,69 @@ class SlavesAndJugs(tk.Tk):
 
     def _build_widgets(self):
         self.create_gui(self.canvas)
-        self.lbl_title = ttk.Label(self.canvas, text="The poisoned jug", font=("Arial", 24))
+        self.lbl_title = tk.Label(self.canvas,background="sienna",bg = "white", text="The Poisoned Jug", font=("Cooper Black", 40), anchor="n")
         self.lbl_title.pack(pady=20)
 
-        self.btn_start = ttk.Button(self.canvas, text="Find the Poisoned Jug", command=self.find_poisoned_jug)
-        self.btn_start.pack(pady=10)
+        self.btn_start = tk.Button(self.canvas, text="Find the Poisoned Jug", command=self.find_poisoned_jug)
+        self.btn_start.place(relx=0.5,rely=0.35,anchor="center")
 
-        self.lbl_result = ttk.Label(self.canvas, text="", font=("Arial", 18))
-        self.lbl_result.pack(pady=10)
+        self.lbl_result = tk.Label(self.canvas, font=("Arial", 18))
 
         self.binary_label = tk.Label(self.canvas, text="Binary: ", font=("Arial", 12))
-        self.binary_label.pack(pady=10)
 
-        self.options_frame = ttk.Frame(self.canvas)
-        self.options_frame.pack(side="left", padx=10)
+        #self.options_frame = tk.Frame(self.canvas,width=150,height=150)
+        self.options_frame = tk.Frame(self.canvas, padx=100,bg="sienna3")
+        self.options_frame.pack(side="top", padx=20,pady=20)
 
-        #ttk.Separator(self.options_frame, orient="horizontal").pack(fill="x", pady=10)
-
-        # Add a label and entry widget for the number of jugs
-        # self.slaves_label = ttk.Label(self.options_frame, text="Number of slaves 1-8:")
-        # self.slaves_label.pack(pady=5)
-        # self.slaves_entry = ttk.Entry(self.options_frame, width=10)
-        # self.slaves_entry.pack(pady=5)
-
-        # self.update_btn_slaves = ttk.Button(self.options_frame, text="Update", command=self.update_slaves)
-        # self.update_btn_slaves.pack(pady=10)
-
-        ttk.Separator(self.options_frame, orient="horizontal").pack(fill="x", pady=10)
-
-        self.jugs_label = ttk.Label(self.options_frame, text="Number of jugs 1-255:")
-        self.jugs_label.pack(pady=5)
-        self.jugs_entry = ttk.Entry(self.options_frame, width=10)
-        self.jugs_entry.pack(pady=5)
-
+        self.jugs_label = tk.Label(self.options_frame, text="Number of jugs 1-1000:",font=("Cooper Black",8))
+        self.jugs_entry = tk.Entry(self.options_frame, width=30)
+        self.jugs_label.pack()
+        self.jugs_entry.pack()
 
             # Add a button to update the number of jugs and slaves
-        self.update_btn_jugs = ttk.Button(self.options_frame, text="Update", command=self.update_jugs)
+        self.update_btn_jugs = tk.Button(self.options_frame, text="Update", command=self.update_jugs)
         self.update_btn_jugs.pack(pady=10)
 
             # Add a separator
-        ttk.Separator(self.options_frame, orient="horizontal").pack(fill="x", pady=10)
 
-        self.back_to_menu_btn = ttk.Button(self.options_frame, text="Back to main menu", command=self.back_to_options)
-        self.back_to_menu_btn.pack(pady=10)
+        self.back_to_menu_btn = tk.Button(self.canvas, width=40, height=40, bd=7,
+                                            fg='#009999', bg='#ffcc99', highlightbackground="blue",
+                                            relief="raised", image=self.img_back_to_menu,
+                                          command=self.back_to_options)
+        self.back_to_menu_btn.place(relx=0.95, rely=0.08, anchor="center")
 
         # self.canvas = tk.Canvas(self, width=780, height=480, bg="white")
         # self.canvas.pack(pady=10)
 
     def _create_animation(self):
-        self.canvas_jugs = tk.Canvas(self.canvas, width=780, height=480, bg="white")
-        self.canvas_jugs.pack(pady=10)
-        self.canvas_jugs.create_image(0, 0, image=self.base_bg, anchor="nw")
+        self.canvas_jugs = tk.Canvas(self.canvas,width=480,height = 380)
+        self.canvas_jugs.place(relx=0.73, rely=0.7, anchor='center')
+        #self.canvas_jugs.create_image(0, 0, image=self.base_bg, anchor="nw")
         self.jug_width = 20
         self.jug_height = 40
         self.spacing = 5
+        self.spacing_print = 13
         self.jug_fill = "sienna"
         self.jug_outline = "black"
         self.jugs = []
         print(self.jugs_num)
+
+        v_scrollbar = tk.Scrollbar(self.canvas, orient=tk.VERTICAL, width=10, relief='raised', borderwidth=2)
+        v_scrollbar.place(relx=0.97, rely=0.7,relheight=self.canvas_jugs.winfo_reqheight() / self.canvas_jugs.winfo_height() / 700,
+                          anchor='center')
+
+        # create a scrollbar for the horizontal axis
+        h_scrollbar = tk.Scrollbar(self.canvas,orient=tk.HORIZONTAL, width=10, relief='raised', borderwidth=2)
+        h_scrollbar.place(relx=0.73, rely=0.965,relwidth=self.canvas_jugs.winfo_reqwidth() / self.canvas_jugs.winfo_width() / 1000,
+                          anchor='center')
+
+        # configure the vertical scrollbar and the Canvas object
+        self.canvas_jugs.config(yscrollcommand=v_scrollbar.set, bg="#cd7c2a")
+        v_scrollbar.config(command=self.canvas_jugs.yview)
+
+        # configure the horizontal scrollbar and the Canvas object
+        self.canvas_jugs.config(xscrollcommand=h_scrollbar.set,bg="#cd7c2a")
+        h_scrollbar.config(command=self.canvas_jugs.xview)
 
         for i in range(self.lines):
             for j in range(self.column):
@@ -94,7 +106,7 @@ class SlavesAndJugs(tk.Tk):
                 y1 = self.spacing + i * (self.jug_height + self.spacing)
                 x2 = x1 + self.jug_width
                 y2 = y1 + self.jug_height
-                jug_number = i * 30 + j + 1
+                jug_number = i * self.column + j + 1
                 if jug_number > self.jugs_num:
                     return
                 # Define the jug shape
@@ -104,11 +116,16 @@ class SlavesAndJugs(tk.Tk):
                                         text=str(jug_number), font=("Arial", 8), fill="white")
                 self.jugs.append(jug)
 
+        self.canvas_jugs.update_idletasks()
+        #self.canvas.config(scrollregion=self.canvas_jugs)
+        self.canvas_jugs.config(scrollregion=self.canvas_jugs.bbox("all"))
+
     def update_jugs(self):
+        self._create_animation()
         self.jugs_entry.config(foreground='black')
         self.jugs_label.config(foreground='black')
         input_jugs = self.jugs_entry.get()
-        if(not input_jugs.isdigit() or int(input_jugs)<1 or int(input_jugs)>255):
+        if(not input_jugs.isdigit() or int(input_jugs)<1 or int(input_jugs)>1000):
             self.jugs_entry.config(foreground='red')
             self.jugs_label.config(foreground='red')
             print("ERROR")
@@ -118,15 +135,15 @@ class SlavesAndJugs(tk.Tk):
             self.jugs_num = int(input_jugs)
             self.slaves_num = int(math.log2(self.jugs_num)) + 1
 
-            if int(self.jugs_entry.get()) <= 30:
+            if int(self.jugs_entry.get()) <= 50:
                 self.lines = 1
                 self.column = int(self.jugs_entry.get())
             else:
-                self.column = 30
-                if int(self.jugs_entry.get()) % 30 == 0:
-                    self.lines = int(self.jugs_entry.get()) // 30
+                self.column = 50
+                if int(self.jugs_entry.get()) % 50 == 0:
+                    self.lines = int(self.jugs_entry.get()) // 50
                 else:
-                    self.lines = int(self.jugs_entry.get()) // 30 + 1
+                    self.lines = int(self.jugs_entry.get()) // 50 + 1
             print(self.jugs_num)
             self.jugs_entry.delete(0,'end')
             self.canvas_jugs.forget()
@@ -165,23 +182,27 @@ class SlavesAndJugs(tk.Tk):
         for i, jug in enumerate(self.jugs):
             self.canvas_jugs.itemconfig(jug, fill=self.jug_fill, outline=self.jug_outline)
 
-    import time
-
-    # ...
-
     def find_poisoned_jug(self):
+
+        self.canvas.delete(self.alive_slave_txt)
+        self.canvas.delete(self.dead_slave_txt)
+        self.canvas.delete(self.slave_num_txt)
+        self._create_animation()
         for item in self.canvas_jugs.find_withtag("slave"):
             self.canvas_jugs.delete(item)
 
         slave_status = [0] * self.slaves_num
+
         self.reset_jugs()
         poisoned_jug = randint(1, self.jugs_num)
         slave_bitmask = [1 << i for i in range(self.slaves_num)][::-1]  # reverse the order of the list
         dead_slave = sum([mask for mask in slave_bitmask if poisoned_jug & mask])
 
+        self.lbl_result.place(relx=0.74,rely=0.20)
         self.lbl_result.config(text=f"Poisoned Jug: {poisoned_jug}")
         self.canvas_jugs.itemconfig(self.jugs[poisoned_jug - 1], fill="blue", outline="blue")
 
+        self.binary_label.place(relx=0.78,rely=0.27)
         self.binary_label.config(text="Binary: {}".format(bin(poisoned_jug)[2:].zfill(self.slaves_num)))
         for i, mask in enumerate(slave_bitmask):
             if dead_slave & mask:
@@ -193,31 +214,30 @@ class SlavesAndJugs(tk.Tk):
                 text_color = "green"
                 num_text = "0"
                 alive_status = "Alive"
-                slave_status[i] = 0  # Set the status of the slave to dead
-            x_pos = 410 + i * (self.jug_width + self.spacing + 20)
-            y_pos = 390
-            self.canvas_jugs.create_text(x_pos, y_pos, text=f"Slave {i}", fill=text_color,
-                                         tags=("slave",))
-            self.canvas_jugs.create_text(x_pos, y_pos + 20, text=num_text, fill=text_color, tags=("slave",))
-            self.canvas_jugs.create_text(x_pos, y_pos + 40, text=alive_status, fill=text_color, tags=("slave",))
-
+            x_pos = 45 + i * (self.jug_width + self.spacing_print + 20)
+            y_pos = 630
+            self.slave_num_txt = self.canvas.create_text(x_pos, y_pos, text=f"Slave {i}", fill=text_color, font=self.bold_font,
+                                                         tags=("slave",))
+            self.dead_slave_txt = self.canvas.create_text(x_pos, y_pos + 20, text=num_text, fill=text_color, font=self.bold_font, tags=("slave",))
+            self.alive_slave_txt = self.canvas.create_text(x_pos, y_pos + 40, text=alive_status, fill=text_color, font=self.bold_font, tags=("slave",))
         self.image = tk.PhotoImage(file="images/Slave.png")
         dead_image = tk.PhotoImage(file="images/skull.png")  # New image for dead slave
 
         canvas_width = self.canvas_jugs.winfo_width()
         canvas_height = self.canvas_jugs.winfo_height()
-        slaves_width = self.jug_width + self.spacing + 20
+        slaves_width = self.jug_width + self.spacing_print + 20
         slaves_height = 40
         num_slaves = self.slaves_num
         initial_x = -self.image.width()  # Starting position outside the left edge of the canvas
-        initial_y = canvas_height // 2 - slaves_height // 2  # Center vertically
-        final_x = canvas_width // 2 - slaves_width * num_slaves // 2
-        final_y = canvas_height // 2 - slaves_height // 2
+        initial_y = canvas_height // 2 - slaves_height // 2 +120  # Center vertically
+        final_x = canvas_width // 2 - slaves_width * num_slaves // 2+30
+        final_y = canvas_height // 2 - slaves_height // 2+120
         animation_duration = 2000
         num_steps = 50
 
+
         for i in range(num_slaves):  # Change the number of times the image enters here (e.g., 2 times)
-            self.animated_image = self.canvas_jugs.create_image(initial_x, initial_y, image=self.image, anchor="nw")
+            self.animated_image = self.canvas.create_image(initial_x, initial_y, image=self.image, anchor="nw")
 
             # Calculate the change in position for each step
             delta_x = (final_x - initial_x) / num_steps
@@ -227,22 +247,47 @@ class SlavesAndJugs(tk.Tk):
             for step in range(num_steps):
                 x = initial_x + step * delta_x
                 y = initial_y + step * delta_y
-                self.canvas_jugs.coords(self.animated_image, x, y)
-                self.canvas_jugs.update()  # Update the canvas to show the changes
-                self.canvas_jugs.after(animation_duration // num_steps)  # Delay between steps
+                self.canvas.coords(self.animated_image, x, y)
+                self.canvas.update()  # Update the canvas to show the changes
+                self.canvas.after(animation_duration // num_steps)  # Delay between steps
 
-            if (slave_status[i] == 1) :  # Set the status of the slave to dead:  # Add the dead slave image on top
-                self.dead_image = self.canvas_jugs.create_image(final_x, final_y, image=dead_image, anchor="nw")
-                self.canvas_jugs.update()
+            wine1_img = tk.PhotoImage(file="images/spilling1.png")
+            wine2_img = tk.PhotoImage(file="images/spilling2.png")
+            wine3_img = tk.PhotoImage(file="images/spilling3.png")
+            wine4_img = tk.PhotoImage(file="images/spilling4.png")
+
+
+            # create image objects on the canvas
+            wine_images = [wine1_img, wine2_img, wine3_img, wine4_img]
+            wine_image_ids = []
+            for j in range(len(wine_images)):
+                wine_image = self.canvas.create_image(550, 250, image=wine_images[j])
+                wine_image_ids.append(wine_image)
+                self.canvas.update()
+                time.sleep(0.5 / self.speed)
+                self.canvas.delete(wine_image)
+
+            # replace the prisoner image with a drinking images
+            drinking_img = tk.PhotoImage(file="images/Slave.png")
+
+            self.canvas.itemconfigure(self.image, image=drinking_img)
+            self.canvas.update()
+            time.sleep(0.0001)
+            self.canvas.coords(self.canvas.find_all()[0])
+
+           # self.canvas.grid_forget()
+
+            if (slave_status[i] == 1):  # Set the status of the slave to dead:  # Add the dead slave image on top
+                self.dead_image = self.canvas.create_image(final_x, final_y, image=dead_image, anchor="nw")
+                self.canvas.update()
                 time.sleep(2)
-                self.canvas_jugs.delete(self.dead_image)  # Remove the dead slave image
+                self.canvas.delete(self.dead_image)  # Remove the dead slave image
 
             # Move the image back to the starting position
-            self.canvas_jugs.coords(self.animated_image, initial_x, initial_y)
+            self.canvas.coords(self.animated_image, initial_x, initial_y)
 
     def back_to_options(self):
-        self.lbl_result.destroy
-        self.binary_label.destroy
-        self.canvas.destroy()
-        self.canvas_jugs.destroy()
+        self.lbl_result.destroy()
+        self.binary_label.destroy()
         self.game_view.back_to_options()
+

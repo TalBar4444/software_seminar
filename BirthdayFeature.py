@@ -15,6 +15,8 @@ class BirthdayFeature(tk.Tk):
         self.chart_frame = chart_frame
         self.date = 0
         self.base_bg = tk.PhotoImage(file="images/background.png")
+        self.img_back_to_menu = tk.PhotoImage(file="images/back.png")
+        pygame.mixer.init()
         # self.birthday_canvas = tk.Canvas(self, width=self.winfo_screenwidth(), height=self.winfo_screenheight())
         # self.birthday_canvas.create_image(0, 0, image=self.base_bg, anchor="nw")
         self.create_gui(self.canvas)
@@ -24,6 +26,9 @@ class BirthdayFeature(tk.Tk):
         # self.grid_of_numbers = tk.Label(self.birthday_canvas,text="",font=('Sans Serif', 15))
        # self.chart_frame = tk.Frame(self.canvas, bg='black', borderwidth=2, relief="ridge")
 
+        self.btn_back_from_game = tk.Button(self.canvas, width=40, height=40, bd=7,
+                                            fg='#009999', bg='#ffcc99', highlightbackground="blue",
+                                            relief="raised", image=self.img_back_to_menu, command=self.btn_back_clicked)
         self.btnYes = tk.Button(self.canvas, width=5, height=2, text="YES", padx=15, pady=7, bg='#856ff8',
                                 font=('Sans Serif', 15),
                                 command=self.btnYes_click)
@@ -35,6 +40,7 @@ class BirthdayFeature(tk.Tk):
 
         self.btn_start_again = tk.Button(self.canvas, text="Start again", width=10, height=2, padx=15, pady=7,
                                          bg='#856ff8', font=('Sans Serif', 15), command=self.btn_start_again)
+
         self.btn_back = tk.Button(self.canvas, text="Back to menu", width=10, height=2, padx=15, pady=7,
                                   bg='#856ff8', font=('Sans Serif', 15), command=self.btn_back_clicked)
         self.place_widgets_in_birthday_page()
@@ -45,6 +51,7 @@ class BirthdayFeature(tk.Tk):
 
     def place_widgets_in_birthday_page(self):
         self.topLbl.place(relx=0.5, rely=0.1, anchor="center")
+        self.btn_back_from_game.place(relx=0.95, rely=0.08, anchor="center")
         self.btnYes.place(relx=0.43, rely=0.75, anchor="center")
         self.btnNo.place(relx=0.58, rely=0.75, anchor="center")
 
@@ -68,7 +75,7 @@ class BirthdayFeature(tk.Tk):
         self.chart_frame.place(relx=0.5, rely=0.4, anchor="center")
 
     def result(self, result):
-        pygame.mixer.init()
+
         pygame.mixer.music.load("music/Happy_Birthday.mp3")
         pygame.mixer.music.play()  # Play the music sound
         if result == 0:
@@ -77,8 +84,7 @@ class BirthdayFeature(tk.Tk):
             self.show_result(f"The date of your birthday is: {result}")
 
 
-    def btnYes_click(self):
-        # choose 0 = no, 1= yes
+    def btnYes_click(self): # choose 0 = no, 1= yes
         if self.round <= 5:
             # self.round = format(self.round,'06b')
             self.date |= self.test
@@ -106,9 +112,10 @@ class BirthdayFeature(tk.Tk):
     def show_result(self, result):
         self.result_lbl["text"] = result
         self.result_lbl.place(relx=0.5, rely=0.2, anchor="center")
+        self.topLbl.place_forget()
         self.btnNo.place_forget()
         self.btnYes.place_forget()
-        self.topLbl.place_forget()
+        self.btn_back_from_game.place_forget()
         self.chart_frame.place_forget()
         self.btn_start_again.place(relx=0.5, rely=0.4, anchor="center")
         self.btn_back.place(relx=0.5, rely=0.6, anchor="center")
@@ -126,11 +133,18 @@ class BirthdayFeature(tk.Tk):
         self.place_widgets_in_birthday_page()
 
     def btn_back_clicked(self):
-        pygame.mixer.music.stop()
+        if pygame.mixer.music.get_busy():
+            pygame.mixer.music.stop()
+        self.topLbl.place_forget()
         self.result_lbl.place_forget()
+        self.btnNo.place_forget()
+        self.btnYes.place_forget()
         self.btn_start_again.place_forget()
         self.btn_back.place_forget()
+        self.btn_back_from_game.place_forget()
         self.game_view.back_to_options()
+        self.reset_game()
+
 
 
     def reset_game(self):
