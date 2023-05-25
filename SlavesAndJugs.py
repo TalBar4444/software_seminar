@@ -35,7 +35,7 @@ class SlavesAndJugs(tk.Tk):
         new_canvas.pack(fill="both", expand=True)
 
     def _build_widgets(self):
-        self.create_gui(self.canvas)
+        # self.create_gui(self.canvas)
         self.lbl_title = tk.Label(self.canvas,background="sienna",bg = "white", text="The Poisoned Jug", font=("Cooper Black", 40), anchor="n")
         self.lbl_title.pack(pady=20)
 
@@ -71,34 +71,29 @@ class SlavesAndJugs(tk.Tk):
         # self.canvas.pack(pady=10)
 
     def _create_animation(self):
-        self.canvas_jugs = tk.Canvas(self.canvas,width=480,height = 380)
+        self.canvas_jugs = tk.Canvas(self.canvas, width=480, height=380)
         self.canvas_jugs.place(relx=0.73, rely=0.7, anchor='center')
-        #self.canvas_jugs.create_image(0, 0, image=self.base_bg, anchor="nw")
+        self.canvas_jugs.config(bg="#cd7c2a")
+
+        v_scrollbar = tk.Scrollbar(self.canvas, orient=tk.VERTICAL, width=10, relief='raised', borderwidth=2)
+        v_scrollbar.place(relx=0.97, rely=0.7, relheight=0.45, anchor='center')
+
+        h_scrollbar = tk.Scrollbar(self.canvas, orient=tk.HORIZONTAL, width=10, relief='raised', borderwidth=2)
+        h_scrollbar.place(relx=0.73, rely=0.965, relwidth=0.45, anchor='center')
+
+        self.canvas_jugs.config(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        v_scrollbar.config(command=self.canvas_jugs.yview)
+        h_scrollbar.config(command=self.canvas_jugs.xview)
+
+        # self.canvas_jugs = tk.Canvas(self.canvas_jugs, bg="#cd7c2a")
+        # self.canvas_jugs.create_window(0, 0, anchor='nw', window=self.canvas_jugs)
+
         self.jug_width = 20
         self.jug_height = 40
         self.spacing = 5
-        self.spacing_print = 13
         self.jug_fill = "sienna"
         self.jug_outline = "black"
         self.jugs = []
-        print(self.jugs_num)
-
-        v_scrollbar = tk.Scrollbar(self.canvas, orient=tk.VERTICAL, width=10, relief='raised', borderwidth=2)
-        v_scrollbar.place(relx=0.97, rely=0.7,relheight=self.canvas_jugs.winfo_reqheight() / self.canvas_jugs.winfo_height() / 700,
-                          anchor='center')
-
-        # create a scrollbar for the horizontal axis
-        h_scrollbar = tk.Scrollbar(self.canvas,orient=tk.HORIZONTAL, width=10, relief='raised', borderwidth=2)
-        h_scrollbar.place(relx=0.73, rely=0.965,relwidth=self.canvas_jugs.winfo_reqwidth() / self.canvas_jugs.winfo_width() / 1000,
-                          anchor='center')
-
-        # configure the vertical scrollbar and the Canvas object
-        self.canvas_jugs.config(yscrollcommand=v_scrollbar.set, bg="#cd7c2a")
-        v_scrollbar.config(command=self.canvas_jugs.yview)
-
-        # configure the horizontal scrollbar and the Canvas object
-        self.canvas_jugs.config(xscrollcommand=h_scrollbar.set,bg="#cd7c2a")
-        h_scrollbar.config(command=self.canvas_jugs.xview)
 
         for i in range(self.lines):
             for j in range(self.column):
@@ -108,16 +103,17 @@ class SlavesAndJugs(tk.Tk):
                 y2 = y1 + self.jug_height
                 jug_number = i * self.column + j + 1
                 if jug_number > self.jugs_num:
-                    return
+                    break
                 # Define the jug shape
-                points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2, x1 + self.jug_width * 0.8, y2, x2, y1 + self.jug_height * 0.6, x2, y1]
+                points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2,
+                          x1 + self.jug_width * 0.8, y2, x2,
+                          y1 + self.jug_height * 0.6, x2, y1]
                 jug = self.canvas_jugs.create_polygon(points, fill=self.jug_fill, outline=self.jug_outline)
                 self.canvas_jugs.create_text(x1 + self.jug_width // 2, y1 + self.jug_height // 2,
-                                        text=str(jug_number), font=("Arial", 8), fill="white")
+                                             text=str(jug_number), font=("Arial", 8), fill="white")
                 self.jugs.append(jug)
 
         self.canvas_jugs.update_idletasks()
-        #self.canvas.config(scrollregion=self.canvas_jugs)
         self.canvas_jugs.config(scrollregion=self.canvas_jugs.bbox("all"))
 
     def update_jugs(self):
@@ -183,10 +179,11 @@ class SlavesAndJugs(tk.Tk):
             self.canvas_jugs.itemconfig(jug, fill=self.jug_fill, outline=self.jug_outline)
 
     def find_poisoned_jug(self):
-
         self.canvas.delete(self.alive_slave_txt)
         self.canvas.delete(self.dead_slave_txt)
         self.canvas.delete(self.slave_num_txt)
+        self.update_btn_jugs.forget()
+        self.btn_start.place_forget()
         self._create_animation()
         for item in self.canvas_jugs.find_withtag("slave"):
             self.canvas_jugs.delete(item)
@@ -214,7 +211,7 @@ class SlavesAndJugs(tk.Tk):
                 text_color = "green"
                 num_text = "0"
                 alive_status = "Alive"
-            x_pos = 45 + i * (self.jug_width + self.spacing_print + 20)
+            x_pos = 45 + i * (self.jug_width + self.spacing + 20)
             y_pos = 630
             self.slave_num_txt = self.canvas.create_text(x_pos, y_pos, text=f"Slave {i}", fill=text_color, font=self.bold_font,
                                                          tags=("slave",))
@@ -225,7 +222,7 @@ class SlavesAndJugs(tk.Tk):
 
         canvas_width = self.canvas_jugs.winfo_width()
         canvas_height = self.canvas_jugs.winfo_height()
-        slaves_width = self.jug_width + self.spacing_print + 20
+        slaves_width = self.jug_width + self.spacing + 20
         slaves_height = 40
         num_slaves = self.slaves_num
         initial_x = -self.image.width()  # Starting position outside the left edge of the canvas
@@ -285,6 +282,8 @@ class SlavesAndJugs(tk.Tk):
 
             # Move the image back to the starting position
             self.canvas.coords(self.animated_image, initial_x, initial_y)
+        self.btn_start.place(relx=0.5, rely=0.35, anchor="center")
+        self.update_btn_jugs.pack(pady=10)
 
     def back_to_options(self):
         self.lbl_result.destroy()
