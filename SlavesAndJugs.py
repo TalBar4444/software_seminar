@@ -43,8 +43,8 @@ class SlavesAndJugs(tk.Tk):
         self.lbl_title = tk.Label(self.canvas,background="sienna",bg = "white", text="The Poisoned Jug", font=("Cooper Black", 40), anchor="n")
         self.lbl_title.pack(pady=20)
 
-        self.btn_start = tk.Button(self.canvas, text="Find the Poisoned Jug", command=self.find_poisoned_jug)
-        self.btn_start.place(relx=0.5, rely=0.39, anchor="center")
+        # self.btn_start = tk.Button(self.options_frame, text="Find the Poisoned Jug", command=self.find_poisoned_jug)
+        # self.btn_start.place(relx=0.5, rely=0.39, anchor="center")
 
         self.lbl_result = tk.Label(self.canvas, font=("Arial", 18))
         self.lbl_total = tk.Label(self.canvas, font=("Arial", 12))
@@ -59,7 +59,7 @@ class SlavesAndJugs(tk.Tk):
         self.jugs_label.pack()
         self.jugs_entry.pack()
 
-        self.speed_label = tk.Label(self.options_frame, text="Choose speed:", font=("Cooper Black", 10))
+        self.speed_label = tk.Label(self.options_frame, text="Choose speed 1 - 10:", font=("Cooper Black", 10))
         self.speed_entry = tk.Entry(self.options_frame, width=30)
         self.speed_label.pack()
         self.speed_entry.pack()
@@ -67,6 +67,9 @@ class SlavesAndJugs(tk.Tk):
             # Add a button to update the number of jugs and slaves
         self.update_btn_jugs = tk.Button(self.options_frame, text="Update", command=self.update_jugs)
         self.update_btn_jugs.pack(pady=10)
+            #add the start button
+        self.btn_start = tk.Button(self.options_frame, text="Find the Poisoned Jug", command=self.find_poisoned_jug)
+        self.btn_start.pack(pady=10)
 
             # Add a separator
 
@@ -207,7 +210,7 @@ class SlavesAndJugs(tk.Tk):
         self.canvas.delete(self.dead_slave_txt)
         self.canvas.delete(self.slave_num_txt)
         self.update_btn_jugs.forget()
-        self.btn_start.place_forget()
+        self.btn_start.forget()
         self._create_animation()
         for item in self.canvas_jugs.find_withtag("slave"):
             self.canvas_jugs.delete(item)
@@ -239,15 +242,15 @@ class SlavesAndJugs(tk.Tk):
                 alive_status = "Alive"
             x_pos = 25 + i * (self.jug_width + self.spacing + 20)
             y_pos = 630
-            self.slave_num_txt = self.canvas.create_text(x_pos, y_pos, text=f"Slave {i}", fill=text_color, font=self.bold_font,
+            self.slave_num_txt = self.canvas.create_text(x_pos, y_pos, text=f"Slave {self.slaves_num-i}", fill=text_color, font=self.bold_font,
                                                          tags=("slave",))
             self.dead_slave_txt = self.canvas.create_text(x_pos, y_pos + 20, text=num_text, fill=text_color, font=self.bold_font, tags=("slave",))
             self.alive_slave_txt = self.canvas.create_text(x_pos, y_pos + 40, text=alive_status, fill=text_color, font=self.bold_font, tags=("slave",))
         self.image = tk.PhotoImage(file="images/Slave.png")
         dead_image = tk.PhotoImage(file="images/skull.png")  # New image for dead slave
 
-        self.lbl_total.place(relx=0.70, rely=0.28)
-        self.lbl_total.config(text=f"Total slaves dead: {self.count_dead} out of {self.slaves_num} slaves")
+        # self.lbl_total.place(relx=0.70, rely=0.28)
+        # self.lbl_total.config(text=f"Total slaves dead: {self.count_dead} out of {self.slaves_num} slaves")
 
         canvas_width = self.canvas_jugs.winfo_width()
         canvas_height = self.canvas_jugs.winfo_height()
@@ -303,7 +306,7 @@ class SlavesAndJugs(tk.Tk):
 
            # self.canvas.grid_forget()
 
-            if (slave_status[i] == 1):  # Set the status of the slave to dead:  # Add the dead slave image on top
+            if (slave_status[self.slaves_num - i - 1] == 1):  # Set the status of the slave to dead:  # Add the dead slave image on top
                 self.dead_image = self.canvas.create_image(final_x, final_y, image=dead_image, anchor="nw")
                 self.canvas.update()
                 time.sleep(2)
@@ -311,10 +314,13 @@ class SlavesAndJugs(tk.Tk):
 
             # Move the image back to the starting position
             self.canvas.coords(self.animated_image, initial_x, initial_y)
-        self.btn_start.place(relx=0.5, rely=0.35, anchor="center")
         self.update_btn_jugs.pack(pady=10)
+        self.btn_start.pack(pady=10)
 
         pygame.mixer.music.stop()
+        self.lbl_total.place(relx=0.70, rely=0.28)
+        self.lbl_total.config(text=f"Total slaves dead: {self.count_dead} out of {self.slaves_num} slaves")
+
 
     def back_to_options(self):
         self.lbl_result.destroy()
