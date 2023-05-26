@@ -40,6 +40,8 @@ class GameView:
 
         self.place_widgets_in_gui()
 
+
+
         # self.create_gui(self.birthday_canvas)
         #
         # self.topLbl = tk.Label(self.birthday_canvas,text="Is your birthday here ?",font=('Sans Serif',20))
@@ -96,46 +98,12 @@ class GameView:
     def place_widgets_in_gui(self):
         self.btn_option1.place(relx=0.3, rely=0.6, anchor="center")
         self.btn_option2.place(relx=0.7, rely=0.6, anchor="center")
-    # def place_widgets_in_birthday_page(self):
-    #     self.topLbl.place(relx=0.5, rely=0.1, anchor="center")
-    #     self.btnYes.place(relx=0.43, rely=0.75, anchor="center")
-    #     self.btnNo.place(relx=0.58, rely=0.75, anchor="center")
 
     def playSlavesGame(self):
         SlavesAndJugs(self.slaves_canvas, self)
 
     def playBirthday(self):
         BirthdayFeature(self.birthday_canvas, self.chart_frame_bd, self)
-
-    def make_slaves_grid(self):
-        self.slaves_num = 8
-        self.jugs_num = 240
-        self.lines = 8
-        self.column = 30
-        self.jug_width = 20
-        self.jug_height = 40
-        self.spacing = 5
-        self.jug_fill = "sienna"
-        self.jug_outline = "black"
-        self.jugs = []
-        print(self.jugs_num)
-
-        for i in range(self.lines):
-            for j in range(self.column):
-                x1 = self.spacing + j * (self.jug_width + self.spacing)
-                y1 = self.spacing + i * (self.jug_height + self.spacing)
-                x2 = x1 + self.jug_width
-                y2 = y1 + self.jug_height
-                jug_number = i * 30 + j + 1
-                if jug_number > self.jugs_num:
-                    return
-                # Define the jug shape
-                points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2,
-                          x1 + self.jug_width * 0.8, y2, x2, y1 + self.jug_height * 0.6, x2, y1]
-                jug = self.slaves_canvas.create_polygon(points, fill=self.jug_fill, outline=self.jug_outline)
-                self.slaves_canvas.create_text(x1 + self.jug_width // 2, y1 + self.jug_height // 2,
-                                        text=str(jug_number), font=("Arial", 8), fill="white")
-                self.jugs.append(jug)
 
     def make_grid(self):
         self.round = 1
@@ -156,56 +124,3 @@ class GameView:
                                            width=6, height=3, bg='orange', borderwidth=3, relief="groove")
                 grid_of_numbers.grid(row=row, column=col)
         self.chart_frame_bd.place(relx=0.5, rely=0.4, anchor="center")
-    # def set_list(self,numList):
-    #     for row in range(4):
-    #         for col in range(4):
-    #             index = row * 4 + col  # calculate the index based on row and column
-    #             grid_of_numbers = tk.Label(self.chart_frame_bd, text=f"{numList[index]}",font=('Sans Serif',15),
-    #                                        width=6, height=3,bg='orange', borderwidth=3,relief="groove")
-    #             grid_of_numbers.grid(row=row, column=col)
-    #     self.chart_frame_bd.place(relx=0.5, rely=0.4, anchor="center")
-    #
-    # def btnYes_click(self):
-    #     self.controller.btn_clicked(1)
-    #
-    # def btnNo_click(self):
-    #     self.controller.btn_clicked(0)
-    #
-    # def show_result(self,result_lbl):
-    #     self.result_lbl["text"] = result_lbl
-    #     self.result_lbl.place(relx=0.5, rely=0.2, anchor="center")
-    #     self.btnNo.place_forget()
-    #     self.btnYes.place_forget()
-    #     self.topLbl.place_forget()
-    #     self.chart_frame_bd.place_forget()
-    #     self.btn_start_again.place(relx=0.5, rely=0.4, anchor="center")
-    #     self.btn_back.place(relx=0.5, rely=0.6, anchor="center")
-    #
-    #
-    # def btn_start_again(self):
-    #     #self.birthday_canvas.pack_forget()
-    #     self.result_lbl.place_forget()
-    #     self.btn_start_again.place_forget()
-    #     self.btn_back.place_forget()
-    #
-    #     self.create_gui(self.birthday_canvas)
-    #     self.controller.btn_start_again()
-    #     self.make_grid()
-    #     self.place_widgets_in_birthday_page()
-    #
-    #
-    # def btn_back_clicked(self):
-    #     self.create_gui(self.my_gui)
-    #     self.my_gui.create_image(0, 0, image=self.base_bg, anchor="nw")
-    #     self.birthday_canvas.pack_forget()
-    #     self.slaves_canvas.pack_forget()
-    #     self.create_gui(self.my_gui)
-    #     self.my_gui.pack(fill="both", expand=True)
-    #     self.place_widgets_in_gui()
-
-
-
-
-
-
-
