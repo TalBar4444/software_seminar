@@ -4,6 +4,9 @@ from random import randint
 import math
 from tkinter.font import Font
 
+import pygame
+
+
 class SlavesAndJugs(tk.Tk):
     def __init__(self, canvas, game_view):
         self.animated_image = None
@@ -24,11 +27,12 @@ class SlavesAndJugs(tk.Tk):
         self.alive_slave_txt = None
         self.slave_num_txt = None
         self._build_widgets()
-        self.speed = 2
+        self.speed = 3
         # self._create_animation()
         self.font_size = 10
         self.bold_font = Font(weight="bold", size=self.font_size)
-        self.count_dead =0
+        self.count_dead = 0
+        pygame.mixer.init()
 
     @staticmethod
     def create_gui(new_canvas):
@@ -40,20 +44,25 @@ class SlavesAndJugs(tk.Tk):
         self.lbl_title.pack(pady=20)
 
         self.btn_start = tk.Button(self.canvas, text="Find the Poisoned Jug", command=self.find_poisoned_jug)
-        self.btn_start.place(relx=0.5,rely=0.35,anchor="center")
+        self.btn_start.place(relx=0.5, rely=0.39, anchor="center")
 
         self.lbl_result = tk.Label(self.canvas, font=("Arial", 18))
-
+        self.lbl_total = tk.Label(self.canvas, font=("Arial", 12))
         self.binary_label = tk.Label(self.canvas, text="Binary: ", font=("Arial", 12))
 
         #self.options_frame = tk.Frame(self.canvas,width=150,height=150)
         self.options_frame = tk.Frame(self.canvas, padx=100,bg="sienna3")
         self.options_frame.pack(side="top", padx=20,pady=20)
 
-        self.jugs_label = tk.Label(self.options_frame, text="Number of jugs 1-1000:",font=("Cooper Black",8))
+        self.jugs_label = tk.Label(self.options_frame, text="Number of jugs 1-1000:",font=("Cooper Black",10))
         self.jugs_entry = tk.Entry(self.options_frame, width=30)
         self.jugs_label.pack()
         self.jugs_entry.pack()
+
+        self.speed_label = tk.Label(self.options_frame, text="Choose speed:", font=("Cooper Black", 10))
+        self.speed_entry = tk.Entry(self.options_frame, width=30)
+        self.speed_label.pack()
+        self.speed_entry.pack()
 
             # Add a button to update the number of jugs and slaves
         self.update_btn_jugs = tk.Button(self.options_frame, text="Update", command=self.update_jugs)
@@ -90,7 +99,7 @@ class SlavesAndJugs(tk.Tk):
 
         self.jug_width = 20
         self.jug_height = 40
-        self.spacing = 5
+        self.spacing = 8
         self.jug_fill = "sienna"
         self.jug_outline = "black"
         self.jugs = []
@@ -121,15 +130,27 @@ class SlavesAndJugs(tk.Tk):
         self.jugs_entry.config(foreground='black')
         self.jugs_label.config(foreground='black')
         input_jugs = self.jugs_entry.get()
+
+        self.speed_entry.config(foreground='black')
+        self.speed_label.config(foreground='black')
+        input_speed = self.speed_entry.get()
+
         if(not input_jugs.isdigit() or int(input_jugs)<1 or int(input_jugs)>1000):
             self.jugs_entry.config(foreground='red')
             self.jugs_label.config(foreground='red')
             print("ERROR")
             return
 
+        if (not input_speed.isdigit() or int(input_speed) < 1 or int(input_speed) > 10):
+            self.speed_entry.config(foreground='red')
+            self.speed_label.config(foreground='red')
+            print("ERROR")
+            return
+
         else:
             self.jugs_num = int(input_jugs)
             self.slaves_num = int(math.log2(self.jugs_num)) + 1
+            self.speed = int(input_speed)
 
             if int(self.jugs_entry.get()) <= 50:
                 self.lines = 1
@@ -142,6 +163,7 @@ class SlavesAndJugs(tk.Tk):
                     self.lines = int(self.jugs_entry.get()) // 50 + 1
             print(self.jugs_num)
             self.jugs_entry.delete(0,'end')
+            self.speed_entry.delete(0, 'end')
             self.canvas_jugs.forget()
             self._create_animation()
 
@@ -179,6 +201,8 @@ class SlavesAndJugs(tk.Tk):
             self.canvas_jugs.itemconfig(jug, fill=self.jug_fill, outline=self.jug_outline)
 
     def find_poisoned_jug(self):
+        pygame.mixer.music.load("music/GraveYard.mp3")
+        pygame.mixer.music.play()  # Play the music sound
         self.canvas.delete(self.alive_slave_txt)
         self.canvas.delete(self.dead_slave_txt)
         self.canvas.delete(self.slave_num_txt)
@@ -195,23 +219,25 @@ class SlavesAndJugs(tk.Tk):
         slave_bitmask = [1 << i for i in range(self.slaves_num)][::-1]  # reverse the order of the list
         dead_slave = sum([mask for mask in slave_bitmask if poisoned_jug & mask])
 
-        self.lbl_result.place(relx=0.74,rely=0.20)
+        self.lbl_result.place(relx=0.74, rely=0.20)
         self.lbl_result.config(text=f"Poisoned Jug: {poisoned_jug}")
         self.canvas_jugs.itemconfig(self.jugs[poisoned_jug - 1], fill="blue", outline="blue")
 
-        self.binary_label.place(relx=0.78,rely=0.27)
+        self.binary_label.place(relx=0.78, rely=0.24)
         self.binary_label.config(text="Binary: {}".format(bin(poisoned_jug)[2:].zfill(self.slaves_num)))
+
         for i, mask in enumerate(slave_bitmask):
             if dead_slave & mask:
                 text_color = "red"
                 num_text = "1"
                 alive_status = "Dead"
                 slave_status[i] = 1  # Set the status of the slave to dead
+                self.count_dead += 1
             else:
                 text_color = "green"
                 num_text = "0"
                 alive_status = "Alive"
-            x_pos = 45 + i * (self.jug_width + self.spacing + 20)
+            x_pos = 25 + i * (self.jug_width + self.spacing + 20)
             y_pos = 630
             self.slave_num_txt = self.canvas.create_text(x_pos, y_pos, text=f"Slave {i}", fill=text_color, font=self.bold_font,
                                                          tags=("slave",))
@@ -220,16 +246,19 @@ class SlavesAndJugs(tk.Tk):
         self.image = tk.PhotoImage(file="images/Slave.png")
         dead_image = tk.PhotoImage(file="images/skull.png")  # New image for dead slave
 
+        self.lbl_total.place(relx=0.70, rely=0.28)
+        self.lbl_total.config(text=f"Total slaves dead: {self.count_dead} out of {self.slaves_num} slaves")
+
         canvas_width = self.canvas_jugs.winfo_width()
         canvas_height = self.canvas_jugs.winfo_height()
         slaves_width = self.jug_width + self.spacing + 20
         slaves_height = 40
         num_slaves = self.slaves_num
         initial_x = -self.image.width()  # Starting position outside the left edge of the canvas
-        initial_y = canvas_height // 2 - slaves_height // 2 +120  # Center vertically
+        initial_y = canvas_height // 2 - slaves_height // 2 +175  # Center vertically
         final_x = canvas_width // 2 - slaves_width * num_slaves // 2+30
-        final_y = canvas_height // 2 - slaves_height // 2+120
-        animation_duration = 2000
+        final_y = canvas_height // 2 - slaves_height // 2+175
+        animation_duration = 3000
         num_steps = 50
 
 
@@ -246,7 +275,7 @@ class SlavesAndJugs(tk.Tk):
                 y = initial_y + step * delta_y
                 self.canvas.coords(self.animated_image, x, y)
                 self.canvas.update()  # Update the canvas to show the changes
-                self.canvas.after(animation_duration // num_steps)  # Delay between steps
+                self.canvas.after((animation_duration//self.speed) // num_steps)  # Delay between steps
 
             wine1_img = tk.PhotoImage(file="images/spilling1.png")
             wine2_img = tk.PhotoImage(file="images/spilling2.png")
@@ -258,7 +287,7 @@ class SlavesAndJugs(tk.Tk):
             wine_images = [wine1_img, wine2_img, wine3_img, wine4_img]
             wine_image_ids = []
             for j in range(len(wine_images)):
-                wine_image = self.canvas.create_image(550, 250, image=wine_images[j])
+                wine_image = self.canvas.create_image(final_x+180, final_y-65, image=wine_images[j])
                 wine_image_ids.append(wine_image)
                 self.canvas.update()
                 time.sleep(0.5 / self.speed)
@@ -284,6 +313,8 @@ class SlavesAndJugs(tk.Tk):
             self.canvas.coords(self.animated_image, initial_x, initial_y)
         self.btn_start.place(relx=0.5, rely=0.35, anchor="center")
         self.update_btn_jugs.pack(pady=10)
+
+        pygame.mixer.music.stop()
 
     def back_to_options(self):
         self.lbl_result.destroy()
