@@ -23,9 +23,9 @@ class SlavesAndJugs(tk.Tk):
         self.jugs_num = 1000
         self.lines = 20
         self.column = 50
-        self.dead_slave_txt = None
-        self.alive_slave_txt = None
-        self.slave_num_txt = None
+        self.dead_slave_txt = ["", "", "", "", "", "", "", "", "", ""]
+        self.alive_slave_txt = ["", "", "", "", "", "", "", "", "", ""]
+        self.slave_num_txt = ["", "", "", "", "", "", "", "", "", ""]
         self._build_widgets()
         self.speed = 3
         # self._create_animation()
@@ -206,11 +206,13 @@ class SlavesAndJugs(tk.Tk):
     def find_poisoned_jug(self):
         pygame.mixer.music.load("music/GraveYard.mp3")
         pygame.mixer.music.play()  # Play the music sound
-        self.canvas.delete(self.alive_slave_txt)
-        self.canvas.delete(self.dead_slave_txt)
-        self.canvas.delete(self.slave_num_txt)
+        for i in range(10):
+            self.canvas.delete(self.alive_slave_txt[i])
+            self.canvas.delete(self.dead_slave_txt[i])
+            self.canvas.delete(self.slave_num_txt[i])
         self.update_btn_jugs.forget()
         self.btn_start.forget()
+        self.back_to_menu_btn.place_forget()
         self._create_animation()
         for item in self.canvas_jugs.find_withtag("slave"):
             self.canvas_jugs.delete(item)
@@ -242,10 +244,10 @@ class SlavesAndJugs(tk.Tk):
                 alive_status = "Alive"
             x_pos = 25 + i * (self.jug_width + self.spacing + 20)
             y_pos = 630
-            self.slave_num_txt = self.canvas.create_text(x_pos, y_pos, text=f"Slave {self.slaves_num-i}", fill=text_color, font=self.bold_font,
+            self.slave_num_txt[i] = self.canvas.create_text(x_pos, y_pos, text=f"Slave {self.slaves_num-i}", fill=text_color, font=self.bold_font,
                                                          tags=("slave",))
-            self.dead_slave_txt = self.canvas.create_text(x_pos, y_pos + 20, text=num_text, fill=text_color, font=self.bold_font, tags=("slave",))
-            self.alive_slave_txt = self.canvas.create_text(x_pos, y_pos + 40, text=alive_status, fill=text_color, font=self.bold_font, tags=("slave",))
+            self.dead_slave_txt[i] = self.canvas.create_text(x_pos, y_pos + 20, text=num_text, fill=text_color, font=self.bold_font, tags=("slave",))
+            self.alive_slave_txt[i] = self.canvas.create_text(x_pos, y_pos + 40, text=alive_status, fill=text_color, font=self.bold_font, tags=("slave",))
         self.image = tk.PhotoImage(file="images/Slave.png")
         dead_image = tk.PhotoImage(file="images/skull.png")  # New image for dead slave
 
@@ -316,6 +318,8 @@ class SlavesAndJugs(tk.Tk):
             self.canvas.coords(self.animated_image, initial_x, initial_y)
         self.update_btn_jugs.pack(pady=10)
         self.btn_start.pack(pady=10)
+        self.back_to_menu_btn.place(relx=0.95, rely=0.08, anchor="center")
+
 
         pygame.mixer.music.stop()
         self.lbl_total.place(relx=0.70, rely=0.28)
