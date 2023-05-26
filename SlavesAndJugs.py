@@ -117,13 +117,13 @@ class SlavesAndJugs(tk.Tk):
                 if jug_number > self.jugs_num:
                     break
                 # Define the jug shape
-                points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2,
-                          x1 + self.jug_width * 0.8, y2, x2,
-                          y1 + self.jug_height * 0.6, x2, y1]
-                jug = self.canvas_jugs.create_polygon(points, fill=self.jug_fill, outline=self.jug_outline)
-                self.canvas_jugs.create_text(x1 + self.jug_width // 2, y1 + self.jug_height // 2,
-                                             text=str(jug_number), font=("Arial", 8), fill="white")
-                self.jugs.append(jug)
+                # points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2,
+                #           x1 + self.jug_width * 0.8, y2, x2,
+                #           y1 + self.jug_height * 0.6, x2, y1]
+                # jug = self.canvas_jugs.create_polygon(points, fill=self.jug_fill, outline=self.jug_outline)
+                # self.canvas_jugs.create_text(x1 + self.jug_width // 2, y1 + self.jug_height // 2,
+                #                              text=str(jug_number), font=("Arial", 8), fill="white")
+                # self.jugs.append(jug)
 
         self.canvas_jugs.update_idletasks()
         self.canvas_jugs.config(scrollregion=self.canvas_jugs.bbox("all"))
@@ -226,7 +226,7 @@ class SlavesAndJugs(tk.Tk):
 
         self.lbl_result.place(relx=0.74, rely=0.20)
         self.lbl_result.config(text=f"Poisoned Jug: {poisoned_jug}")
-        self.canvas_jugs.itemconfig(self.jugs[poisoned_jug - 1], fill="blue", outline="blue")
+        # self.canvas_jugs.itemconfig(self.jugs[poisoned_jug - 1], fill="blue", outline="blue")
 
         self.binary_label.place(relx=0.78, rely=0.24)
         self.binary_label.config(text="Binary: {}".format(bin(poisoned_jug)[2:].zfill(self.slaves_num)))
@@ -268,57 +268,59 @@ class SlavesAndJugs(tk.Tk):
 
 
         for i in range(num_slaves):  # Change the number of times the image enters here (e.g., 2 times)
-            self.animated_image = self.canvas.create_image(initial_x, initial_y, image=self.image, anchor="nw")
-
+            self.create_table(i)
+            if(self.counter1 == 5):
+                self.animated_image = self.canvas.create_image(initial_x, initial_y, image=self.image, anchor="nw")
             # Calculate the change in position for each step
-            delta_x = (final_x - initial_x) / num_steps
-            delta_y = (final_y - initial_y) / num_steps
+                delta_x = (final_x - initial_x) / num_steps
+                delta_y = (final_y - initial_y) / num_steps
 
             # Move the image gradually using a loop
-            for step in range(num_steps):
-                x = initial_x + step * delta_x
-                y = initial_y + step * delta_y
-                self.canvas.coords(self.animated_image, x, y)
-                self.canvas.update()  # Update the canvas to show the changes
-                self.canvas.after((animation_duration//self.speed) // num_steps)  # Delay between steps
+                for step in range(num_steps):
+                    x = initial_x + step * delta_x
+                    y = initial_y + step * delta_y
+                    self.canvas.coords(self.animated_image, x, y)
+                    self.canvas.update()  # Update the canvas to show the changes
+                    self.canvas.after((animation_duration//self.speed) // num_steps)  # Delay between steps
 
-            wine1_img = tk.PhotoImage(file="images/spilling1.png")
-            wine2_img = tk.PhotoImage(file="images/spilling2.png")
-            wine3_img = tk.PhotoImage(file="images/spilling3.png")
-            wine4_img = tk.PhotoImage(file="images/spilling4.png")
+                wine1_img = tk.PhotoImage(file="images/spilling1.png")
+                wine2_img = tk.PhotoImage(file="images/spilling2.png")
+                wine3_img = tk.PhotoImage(file="images/spilling3.png")
+                wine4_img = tk.PhotoImage(file="images/spilling4.png")
 
 
             # create image objects on the canvas
-            wine_images = [wine1_img, wine2_img, wine3_img, wine4_img]
-            wine_image_ids = []
-            for j in range(len(wine_images)):
-                wine_image = self.canvas.create_image(final_x+180, final_y-65, image=wine_images[j])
-                wine_image_ids.append(wine_image)
-                self.canvas.update()
-                time.sleep(0.5 / self.speed)
-                self.canvas.delete(wine_image)
+                wine_images = [wine1_img, wine2_img, wine3_img, wine4_img]
+                wine_image_ids = []
+                for j in range(len(wine_images)):
+                    wine_image = self.canvas.create_image(final_x+180, final_y-65, image=wine_images[j])
+                    wine_image_ids.append(wine_image)
+                    self.canvas.update()
+                    time.sleep(0.5 / self.speed)
+                    self.canvas.delete(wine_image)
 
             # replace the prisoner image with a drinking images
-            drinking_img = tk.PhotoImage(file="images/Slave.png")
+                drinking_img = tk.PhotoImage(file="images/Slave.png")
 
-            self.canvas.itemconfigure(self.image, image=drinking_img)
-            self.canvas.update()
-            time.sleep(0.0001)
-            self.canvas.coords(self.canvas.find_all()[0])
+                self.canvas.itemconfigure(self.image, image=drinking_img)
+                self.canvas.update()
+                time.sleep(0.0001)
+                self.canvas.coords(self.canvas.find_all()[0])
 
            # self.canvas.grid_forget()
 
-            if (slave_status[self.slaves_num - i - 1] == 1):  # Set the status of the slave to dead:  # Add the dead slave image on top
-                self.dead_image = self.canvas.create_image(final_x, final_y, image=dead_image, anchor="nw")
-                self.canvas.update()
-                time.sleep(2)
-                self.canvas.delete(self.dead_image)  # Remove the dead slave image
+                if (slave_status[self.slaves_num - i - 1] == 1):  # Set the status of the slave to dead:  # Add the dead slave image on top
+                    self.dead_image = self.canvas.create_image(final_x, final_y, image=dead_image, anchor="nw")
+                    self.canvas.update()
+                    time.sleep(2)
+                    self.canvas.delete(self.dead_image)  # Remove the dead slave image
 
             # Move the image back to the starting position
-            self.canvas.coords(self.animated_image, initial_x, initial_y)
-        self.update_btn_jugs.pack(pady=10)
-        self.btn_start.pack(pady=10)
-        self.back_to_menu_btn.place(relx=0.95, rely=0.08, anchor="center")
+                self.canvas.coords(self.animated_image, initial_x, initial_y)
+                self.canvas_jugs.delete(("all"))
+            self.update_btn_jugs.pack(pady=10)
+            self.btn_start.pack(pady=10)
+            self.back_to_menu_btn.place(relx=0.95, rely=0.08, anchor="center")
 
 
         pygame.mixer.music.stop()
@@ -331,3 +333,38 @@ class SlavesAndJugs(tk.Tk):
         self.binary_label.destroy()
         self.game_view.back_to_options()
 
+    def create_table(self, number_of_slave):
+        self.jug_width = 20
+        self.jug_height = 40
+        self.spacing = 8
+        self.jug_fill = "sienna"
+        self.jug_outline = "black"
+        self.jugs = []
+        self.coutner1 = 0
+
+        for i in range(self.lines):
+            for j in range(self.column):
+                x1 = self.spacing + j * (self.jug_width + self.spacing)
+                y1 = self.spacing + i * (self.jug_height + self.spacing)
+                x2 = x1 + self.jug_width
+                y2 = y1 + self.jug_height
+                jug_number = i * self.column + j + 1
+                if jug_number > self.jugs_num:
+                    break
+                # Define the jug shape
+                points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2,
+                          x1 + self.jug_width * 0.8, y2, x2,
+                          y1 + self.jug_height * 0.6, x2, y1]
+                print(jug_number)
+                binary = bin(jug_number)[2:]
+                decimal = int(binary, 2)
+                # print(number_of_slave)
+                if number_of_slave < 1 or number_of_slave > len(binary):
+                    pass
+                elif (binary[-number_of_slave] == '1'):
+                    print("hi")
+                    jug = self.canvas_jugs.create_polygon(points, fill=self.jug_fill, outline=self.jug_outline)
+                    self.canvas_jugs.create_text(x1 + self.jug_width // 2, y1 + self.jug_height // 2,
+                                             text=str(jug_number), font=("Arial", 8), fill="white")
+                    self.jugs.append(jug)
+        self.counter1 = 5
