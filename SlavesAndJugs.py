@@ -7,6 +7,13 @@ import pygame
 
 class SlavesAndJugs(tk.Tk):
     def __init__(self, canvas, game_view):
+        """
+             Initialize the SlavesAndJugs class.
+
+             Parameters:
+             - canvas (tk.Canvas): The canvas on which the game is displayed.
+             - game_view: The game view object.
+        """
         self.animated_image = None
         self.game_view = game_view
         self.base_bg = tk.PhotoImage(file="images/slavesBG.png")
@@ -29,9 +36,18 @@ class SlavesAndJugs(tk.Tk):
 
     @staticmethod
     def create_gui(new_canvas):
+        """
+               Create the graphical user interface (GUI) for the game.
+
+               Parameters:
+               - new_canvas (tk.Canvas): The canvas on which the GUI is created.
+        """
         new_canvas.pack(fill="both", expand=True)
 
     def _build_widgets(self):
+        """
+            Build the widgets for the game GUI.
+        """
         self.lbl_title = tk.Label(self.canvas,background="sienna",bg = "white", text="The Poisoned Jug", font=("Cooper Black", 40), anchor="n")
         self.lbl_title.pack(pady=20)
         self.lbl_result = tk.Label(self.canvas, font=("Arial", 18))
@@ -62,6 +78,9 @@ class SlavesAndJugs(tk.Tk):
         self.back_to_menu_btn.place(relx=0.95, rely=0.08, anchor="center")
 
     def _create_animation(self):
+        """
+            Creates the animation canvas and initializes the jugs based on the user input.
+        """
         self.canvas_jugs = tk.Canvas(self.canvas, width=480, height=380)
         self.canvas_jugs.place(relx=0.73, rely=0.7, anchor='center')
         self.canvas_jugs.config(bg="#cd7c2a")
@@ -98,6 +117,9 @@ class SlavesAndJugs(tk.Tk):
         self.canvas_jugs.config(scrollregion=self.canvas_jugs.bbox("all"))
 
     def update_jugs(self):
+        """
+         Updates the jugs based on the user input and resets the animation canvas.
+         """
         self._create_animation()
         self.jugs_entry.config(foreground='black')
         self.jugs_label.config(foreground='black')
@@ -140,10 +162,16 @@ class SlavesAndJugs(tk.Tk):
             self._create_animation()
 
     def reset_jugs(self):
+        """
+           Resets the color of all jugs on the animation canvas.
+        """
         for i, jug in enumerate(self.jugs):
             self.canvas_jugs.itemconfig(jug, fill=self.jug_fill, outline=self.jug_outline)
 
     def find_poisoned_jug(self):
+        """
+            Starts the process of finding the poisoned jug.
+            """
         pygame.mixer.music.load("music/GraveYard.mp3")
         pygame.mixer.music.play()  # Play the music sound
         self.count_dead = 0
@@ -291,11 +319,20 @@ class SlavesAndJugs(tk.Tk):
         self.lbl_total.config(text=f"Total slaves dead: {self.count_dead} out of {self.slaves_num} slaves")
 
     def back_to_options(self):
+        """
+            Handles the action of going back to the options menu.
+            """
         self.lbl_result.destroy()
         self.binary_label.destroy()
         self.game_view.back_to_options()
 
     def create_table(self, number_of_slave):
+        """
+            Creates a table of jugs based on the specified number of slaves.
+
+            Args:
+                number_of_slave (int): The number of slaves.
+            """
         self.jug_width = 20
         self.jug_height = 40
         self.spacing = 8

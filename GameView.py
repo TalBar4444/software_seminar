@@ -1,11 +1,12 @@
 import tkinter as tk
 from BirthdayFeature import BirthdayFeature
 from SlavesAndJugs import SlavesAndJugs
-#from PIL import ImageTk
-
 
 class GameView:
     def __init__(self):
+        """
+            Initializes the GameView class.
+        """
         self.root = tk.Tk()
         self.root.wm_attributes("-topmost", 1)
         self.topLbl = None
@@ -40,29 +41,16 @@ class GameView:
 
         self.place_widgets_in_gui()
 
-
-
-        # self.create_gui(self.birthday_canvas)
-        #
-        # self.topLbl = tk.Label(self.birthday_canvas,text="Is your birthday here ?",font=('Sans Serif',20))
-        #
-        # #self.grid_of_numbers = tk.Label(self.birthday_canvas,text="",font=('Sans Serif', 15))
-        # self.chart_frame_bd = tk.Frame(self.birthday_canvas,bg='black', borderwidth=2, relief="ridge")
-        #
-        #
-        # self.btnYes = tk.Button(self.birthday_canvas,width=5,height=2, text="YES",padx=15,pady=7,bg='#856ff8',font=('Sans Serif',15),
-        #                         command=self.btnYes_click)
-        # self.btnNo = tk.Button(self.birthday_canvas,text="NO",width=5,height=2, padx=15,pady=7,bg='#856ff8',font=('Sans Serif',15),
-        #                         command=self.btnNo_click)
-
-        # self.result_lbl = tk.Label(self.birthday_canvas,text="",font=("Sans Serif",20))
-        #
-        # self.btn_start_again = tk.Button(self.birthday_canvas, text="Start again",width=10,height=2, padx=15,pady=7,
-        #                                  bg='#856ff8',font=('Sans Serif',15),command=self.btn_start_again)
-        # self.btn_back = tk.Button(self.birthday_canvas, text="Back to menu",width=10,height=2, padx=15,pady=7,
-        #                            bg='#856ff8',font=('Sans Serif',15),command=self.btn_back_clicked)
-
     def back_to_options(self):
+        """
+            Resets the GUI to the options screen.
+
+            - Packs and displays the main canvas.
+            - Removes the birthday canvas and recreates the slaves canvas.
+            - Resets the background images.
+            - Displays the "Choose One Option" text.
+            - Recreates the option buttons.
+        """
         self.create_gui(self.my_gui)
         self.birthday_canvas.pack_forget()
         self.slaves_canvas.destroy()
@@ -85,27 +73,43 @@ class GameView:
                                      image=self.slaves, compound='bottom',
                                      command=lambda: [self.my_gui.pack_forget(), self.create_gui(self.slaves_canvas),
                                                       self.playSlavesGame()])
-        # self.birthday_canvas.pack_forget()
-        # self.slaves_canvas.pack_forget()
-        # self.create_gui(self.my_gui)
+
         self.my_gui.pack(fill="both", expand=True)
         self.place_widgets_in_gui()
 
     @staticmethod
     def create_gui(new_canvas):
+        """
+            Packs and displays the specified canvas.
+
+            Args:
+                new_canvas (tkinter.Canvas): The canvas to be displayed.
+        """
         new_canvas.pack(fill="both", expand=True)
 
     def place_widgets_in_gui(self):
+        """
+            Places the option buttons in the GUI.
+        """
         self.btn_option1.place(relx=0.3, rely=0.6, anchor="center")
         self.btn_option2.place(relx=0.7, rely=0.6, anchor="center")
 
     def playSlavesGame(self):
+        """
+            Starts the SlavesAndJugs game.
+        """
         SlavesAndJugs(self.slaves_canvas, self)
 
     def playBirthday(self):
+        """
+            Starts the BirthdayFeature game.
+        """
         BirthdayFeature(self.birthday_canvas, self.chart_frame_bd, self)
 
     def make_grid(self):
+        """
+            Generates and sets the numbers grid for the BirthdayFeature game.
+        """
         self.round = 1
         curList = []
         # self.controller.get_List(1)
@@ -117,6 +121,12 @@ class GameView:
         curList.clear()
 
     def set_list(self, numList):
+        """
+            Sets the numbers grid for the BirthdayFeature game.
+
+            Args:
+                   numList (list): List of numbers to be displayed in the grid.
+        """
         for row in range(4):
             for col in range(4):
                 index = row * 4 + col  # calculate the index based on row and column
