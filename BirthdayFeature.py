@@ -1,8 +1,6 @@
 import tkinter as tk
 import pygame
-from tkinter import ttk
-from random import randint
-import math
+
 
 class BirthdayFeature(tk.Tk):
     def __init__(self, canvas, chart_frame, game_view):
@@ -29,19 +27,19 @@ class BirthdayFeature(tk.Tk):
 
         # Create GUI and place widgets
         self.create_gui(self.canvas)
-        self.topLbl = tk.Label(self.canvas, text="Is your birthday here ?", font=('Sans Serif', 20))
+        self.topLbl = tk.Label(self.canvas, text="Is your birthday here ?", font=("Cooper Black", 25), bg="#498a9c")
         self.btn_back_from_game = tk.Button(self.canvas, width=40, height=40, bd=7,
-                                            fg='#009999', bg='#ffcc99', highlightbackground="blue",
+                                            fg='#009999', bg="#ffcc99", highlightbackground="blue",
                                             relief="raised", image=self.img_back_to_menu, command=self.btn_back_clicked)
         self.btnYes = tk.Button(self.canvas, width=5, height=2, text="YES", padx=15, pady=7, bg='#856ff8',
-                                font=('Sans Serif', 15), command=self.btnYes_click)
+                                font=("Cooper Black", 15), command=self.btnYes_click)
         self.btnNo = tk.Button(self.canvas, text="NO", width=5, height=2, padx=15, pady=7, bg='#856ff8',
-                               font=('Sans Serif', 15), command=self.btnNo_click)
-        self.result_lbl = tk.Label(self.canvas, text="", font=("Sans Serif", 20))
+                               font=("Cooper Black", 15), command=self.btnNo_click)
+        self.result_lbl = tk.Label(self.canvas, text="", font=("Cooper Black", 25), bg="#498a9c")
         self.btn_start_again = tk.Button(self.canvas, text="Start again", width=10, height=2, padx=15, pady=7,
-                                         bg='#856ff8', font=('Sans Serif', 15), command=self.btn_start_again)
+                                         bg='#856ff8', font=("Cooper Black", 15), command=self.btn_start_again)
         self.btn_back = tk.Button(self.canvas, text="Back to menu", width=10, height=2, padx=15, pady=7,
-                                  bg='#856ff8', font=('Sans Serif', 15), command=self.btn_back_clicked)
+                                  bg='#856ff8', font=("Cooper Black", 15), command=self.btn_back_clicked)
         self.place_widgets_in_birthday_page()
 
     @staticmethod
@@ -82,7 +80,7 @@ class BirthdayFeature(tk.Tk):
             for col in range(4):
                 index = row * 4 + col
                 grid_of_numbers = tk.Label(self.chart_frame, text=f"{numList[index]}", font=('Sans Serif', 15),
-                                               width=6, height=3, bg='orange', borderwidth=3, relief="groove")
+                                           width=6, height=3, bg='orange', borderwidth=3, relief="groove")
                 grid_of_numbers.grid(row=row, column=col)
         self.chart_frame.place(relx=0.5, rely=0.4, anchor="center")
 
@@ -104,14 +102,12 @@ class BirthdayFeature(tk.Tk):
         """Handles the button click event for 'YES'."""
         if self.round <= 5:
             self.date |= self.test
-            print(self.date)
 
         self.test *= 2
         self.round += 1
         if self.round <= 5:
             self.make_grid()
         if self.round > 5:
-            print(self.date)
             self.result(self.date)
 
     def btnNo_click(self):
@@ -121,7 +117,6 @@ class BirthdayFeature(tk.Tk):
         if self.round <= 5:
             self.make_grid()
         if self.round > 5:
-            print(self.date)
             self.result(self.date)
 
     def show_result(self, result):
