@@ -211,10 +211,10 @@ class SlavesAndJugs(tk.Tk):
                 self.canvas.update()  # Update the canvas to show the changes
                 self.canvas.after((animation_duration // self.speed) // num_steps)  # Delay between steps
 
-            wine1_img = tk.PhotoImage(file="images/spilling1.png")
-            wine2_img = tk.PhotoImage(file="images/spilling2.png")
-            wine3_img = tk.PhotoImage(file="images/spilling3.png")
-            wine4_img = tk.PhotoImage(file="images/spilling4.png")
+            wine1_img = tk.PhotoImage(file="images/Jug1.png")
+            wine2_img = tk.PhotoImage(file="images/Jug2.png")
+            wine3_img = tk.PhotoImage(file="images/Jug3.png")
+            wine4_img = tk.PhotoImage(file="images/Jug4.png")
 
             # create image objects on the canvas
             wine_images = [wine1_img, wine2_img, wine3_img, wine4_img]
