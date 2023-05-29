@@ -15,6 +15,7 @@ class SlavesAndJugs(tk.Tk):
              - canvas (tk.Canvas): The canvas on which the game is displayed.
              - game_view: The game view object.
         """
+        self.num_of_jugs_in_frame = 500
         self.animated_image = None
         self.game_view = game_view
         self.base_bg = tk.PhotoImage(file="images/slavesBG.png")
@@ -25,6 +26,7 @@ class SlavesAndJugs(tk.Tk):
                                                  fill="white")
         self.slaves_num = 10
         self.jugs_num = 1000
+
         self.lines = 20
         self.column = 50
         self.dead_slave_txt = ["", "", "", "", "", "", "", "", "", ""]
@@ -51,10 +53,7 @@ class SlavesAndJugs(tk.Tk):
         """
             Build the widgets for the game GUI.
         """
-        self.lbl_result = tk.Label(self.canvas, font=("Cooper Black", 18))
-        self.lbl_total = tk.Label(self.canvas, font=("Cooper Black", 12))
-        self.slave_label = tk.Label(self.canvas, text="", font=("Cooper Black", 18))
-
+        # start frame widgets
         self.options_frame = tk.Frame(self.canvas, padx=30, pady=10, bg="#E1A95F", borderwidth=5, relief="ridge")
         self.options_frame.pack(pady=100)
         self.jugs_label = tk.Label(self.options_frame, text="Number of jugs 1-1000:", bg="#E1A95F",
@@ -70,6 +69,16 @@ class SlavesAndJugs(tk.Tk):
         self.btn_start = tk.Button(self.options_frame, text="Find the Poisoned Jug", font=("Cooper Black", 11),
                                    command=self.find_poisoned_jug)
         self.btn_start.pack(pady=10)
+
+        # primary details
+        self.num_of_jugs_lbl = tk.Label(self.canvas, font=("Cooper Black", 12))
+        self.lbl_result = tk.Label(self.canvas, font=("Cooper Black", 12))
+        self.lbl_result_binary = tk.Label(self.canvas, font=("Cooper Black", 12))
+        self.lbl_jug_num_in_frame = tk.Label(self.canvas, font=("Cooper Black", 12))
+
+        self.slave_label = tk.Label(self.canvas, text="", font=("Cooper Black", 18))
+        self.lbl_total = tk.Label(self.canvas, font=("Cooper Black", 12))
+
         self.back_to_menu_btn = tk.Button(self.canvas, width=40, height=40, bd=7,fg='#009999', bg='#ffcc99',
                                           highlightbackground="blue",relief="raised", image=self.img_back_to_menu,
                                           command=self.back_to_options)
@@ -105,6 +114,43 @@ class SlavesAndJugs(tk.Tk):
         for i, jug in enumerate(self.jugs):
             self.canvas_jugs.itemconfig(jug, fill=self.jug_fill, outline=self.jug_outline)
 
+    # def initialize_data(self):
+
+            #self.canvas_jugs.forget()
+            #self._create_animation()
+
+    def reset_data(self):
+        self.count_dead = 0
+        for i in range(10):
+            self.canvas.delete(self.slave_num_txt[i])
+            self.canvas.delete(self.dead_slave_txt[i])
+            self.canvas.delete(self.alive_slave_txt[i])
+        # for item in self.canvas_jugs.find_withtag("slave"):
+        #     self.canvas_jugs.delete(item)
+
+        for item in self.canvas.find_withtag("rectangle"):
+            self.canvas.delete(item)
+
+        #self.num_of_jugs_lbl.place_forget()
+        #self.lbl_result.place_forget()
+        self.lbl_total.place_forget()
+        self.options_frame.pack_forget()
+        self.back_to_menu_btn.place_forget()
+
+    def show_primary_details(self, poisoned_jug):
+
+        self.num_of_jugs_lbl.config(text=f"Total number of jugs: {self.jugs_num}")
+        self.num_of_jugs_lbl.place(relx=0.76, rely=0.17)
+
+        self.lbl_result.config(text=f"The Poisoned Jug: {poisoned_jug}")
+        self.lbl_result.place(relx=0.78, rely=0.22)
+
+        self.lbl_result_binary.config(text="Binary: {}".format(bin(poisoned_jug)[2:].zfill(self.slaves_num)))
+        self.lbl_result_binary.place(relx=0.79, rely=0.26)
+
+        self.lbl_jug_num_in_frame.config(text=f"Number of jugs in frame: {self.num_of_jugs_in_frame}")
+        self.lbl_jug_num_in_frame.place(relx=0.75,rely=0.47)
+
     def find_poisoned_jug(self):
         """
             Starts the process of finding the poisoned jug.
@@ -132,6 +178,9 @@ class SlavesAndJugs(tk.Tk):
         else:
             self.jugs_num = int(input_jugs)
             self.slaves_num = int(math.log2(self.jugs_num)) + 1
+            if self.jugs_num % 2 != 0:
+                self.num_of_jugs_in_frame = int(self.jugs_num / 2) + 1
+            # self.num_of_jugs_lbl.config(text=f"Amount of jugs: {self.jugs_num/2}")
             self._create_animation()
             self.speed = int(input_speed)
 
@@ -147,30 +196,19 @@ class SlavesAndJugs(tk.Tk):
 
             self.jugs_entry.delete(0, 'end')
             self.speed_entry.delete(0, 'end')
-            self.canvas_jugs.forget()
-            self._create_animation()
+
+        self.reset_data() # reset all data in the window for a new round
 
         pygame.mixer.music.load("music/GraveYard.mp3")
         pygame.mixer.music.play()  # Play the music sound
-        self.count_dead = 0
-        for i in range(10):
-            self.canvas.delete(self.slave_num_txt[i])
-            self.canvas.delete(self.dead_slave_txt[i])
-            self.canvas.delete(self.alive_slave_txt[i])
-        for item in self.canvas.find_withtag("rectangle"):
-            self.canvas.delete(item)
-        self.lbl_total.place_forget()
-        self.lbl_result.place_forget()
-        self.options_frame.pack_forget()
-        self.back_to_menu_btn.place_forget()
         self._create_animation()
-        for item in self.canvas_jugs.find_withtag("slave"):
-            self.canvas_jugs.delete(item)
-
         slave_status = [0] * self.slaves_num
 
         self.reset_jugs()
-        poisoned_jug = randint(1, self.jugs_num)
+        poisoned_jug = randint(1, self.jugs_num)  # raffle the number of the poisoned jug
+
+        self.show_primary_details(poisoned_jug)
+
         slave_bitmask = [1 << i for i in range(self.slaves_num)][::-1]  # reverse the order of the list
         dead_slave = sum([mask for mask in slave_bitmask if poisoned_jug & mask])
 
@@ -302,8 +340,8 @@ class SlavesAndJugs(tk.Tk):
 
         self.options_frame.pack(pady=100)
         self.back_to_menu_btn.place(relx=0.95, rely=0.08, anchor="center")
-        self.lbl_result.place(relx=0.15, rely=0.65)
-        self.lbl_result.config(text=f"The poisoned Jug: {poisoned_jug}")
+        #self.lbl_result.place(relx=0.15, rely=0.65)
+        #self.lbl_result.config(text=f"The poisoned Jug: {poisoned_jug}")
         self.lbl_total.place(relx=0.14, rely=0.71)
         self.lbl_total.config(text=f"Total slaves dead: {self.count_dead} out of {self.slaves_num} slaves")
 
