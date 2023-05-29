@@ -15,6 +15,7 @@ class SlavesAndJugs(tk.Tk):
              - canvas (tk.Canvas): The canvas on which the game is displayed.
              - game_view: The game view object.
         """
+        self.num_of_jugs = 500
         self.animated_image = None
         self.game_view = game_view
         self.base_bg = tk.PhotoImage(file="images/slavesBG.png")
@@ -132,6 +133,7 @@ class SlavesAndJugs(tk.Tk):
         else:
             self.jugs_num = int(input_jugs)
             self.slaves_num = int(math.log2(self.jugs_num)) + 1
+            self.num_of_jugs = self.jugs_num/2
             self._create_animation()
             self.speed = int(input_speed)
 
@@ -147,8 +149,6 @@ class SlavesAndJugs(tk.Tk):
 
             self.jugs_entry.delete(0, 'end')
             self.speed_entry.delete(0, 'end')
-            self.canvas_jugs.forget()
-            self._create_animation()
 
         pygame.mixer.music.load("music/GraveYard.mp3")
         pygame.mixer.music.play()  # Play the music sound
@@ -236,7 +236,7 @@ class SlavesAndJugs(tk.Tk):
             self.canvas.coords(self.canvas.find_all()[0])
 
             # Set the status of the slave to dead:  # Add the dead slave image on top
-            if slave_status[self.slaves_num - i - 1] == 1:
+            if slave_status[i] == 1:
                 self.dead_image = self.canvas.create_image(final_x, final_y, image=dead_image, anchor="nw")
                 self.canvas.update()
                 time.sleep(2)
@@ -286,7 +286,7 @@ class SlavesAndJugs(tk.Tk):
             y_pos = 540
 
             # define shaped background to the text
-            self.slave_num_txt[i] = self.canvas.create_text(x_pos, y_pos, text=f"Slave {self.slaves_num - i}",
+            self.slave_num_txt[i] = self.canvas.create_text(x_pos, y_pos, text=f"Slave {i+1}",
                                                             fill=text_color, font=self.bold_font, tags="slave")
             s = self.canvas.create_rectangle(self.canvas.bbox(self.slave_num_txt[i]), fill="white",tags="rectangle")
             self.canvas.tag_lower(s, self.slave_num_txt[i])
@@ -328,29 +328,30 @@ class SlavesAndJugs(tk.Tk):
         h_scrollbar = tk.Scrollbar(self.canvas, orient=tk.HORIZONTAL, width=12, relief='raised', borderwidth=2)
         h_scrollbar.place(relx=0.75, rely=0.946, relwidth=0.452, anchor='center')
 
+        self.num_of_jugs = self.jugs_num//2
         self.canvas_jugs.config(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
         v_scrollbar.config(command=self.canvas_jugs.yview)
         h_scrollbar.config(command=self.canvas_jugs.xview)
 
         for i in range(self.lines):
             for j in range(self.column):
-                x1 = self.spacing + j * (self.jug_width + self.spacing)
-                y1 = self.spacing + i * (self.jug_height + self.spacing)
-                x2 = x1 + self.jug_width
-                y2 = y1 + self.jug_height
                 jug_number = i * self.column + j + 1
                 if jug_number > self.jugs_num:
                     break
-                # Define the jug shape
-                points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2,
-                          x1 + self.jug_width * 0.8, y2, x2,
-                          y1 + self.jug_height * 0.6, x2, y1]
 
-                binary = bin(jug_number)[2:]
+                formatted_binary = format(jug_number, '0{}b'.format(self.slaves_num))
 
-                if number_of_slave < 1 or number_of_slave > len(binary):
+                if number_of_slave < 1 or number_of_slave > len(formatted_binary):
                     pass
-                elif binary[-number_of_slave] == '1':
+                elif formatted_binary[number_of_slave-1] == '1':
+
+                    x1 = self.spacing + (jug_number - 1) % self.num_of_jugs * (self.jug_width + self.spacing)
+                    y1 = self.spacing + (jug_number - 1) // self.num_of_jugs * (self.jug_height + self.spacing)
+                    x2 = x1 + self.jug_width
+                    y2 = y1 + self.jug_height
+                    points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2,
+                              x1 + self.jug_width * 0.8, y2, x2, y1 + self.jug_height * 0.6, x2, y1]
+
                     jug = self.canvas_jugs.create_polygon(points, fill=self.jug_fill, outline=self.jug_outline)
                     self.canvas_jugs.create_text(x1 + self.jug_width // 2, y1 + self.jug_height // 2,
                                                  text=str(jug_number), font=("Arial", 8), fill="white")
@@ -359,3 +360,4 @@ class SlavesAndJugs(tk.Tk):
 
         self.canvas_jugs.update_idletasks()
         self.canvas_jugs.config(scrollregion=self.canvas_jugs.bbox("all"))
+
