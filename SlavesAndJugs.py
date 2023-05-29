@@ -197,7 +197,7 @@ class SlavesAndJugs(tk.Tk):
             self.jugs_entry.delete(0, 'end')
             self.speed_entry.delete(0, 'end')
 
-        self.reset_data() # reset all data in the window for a new round
+        self.reset_data()  # reset all data in the window for a new round
 
         pygame.mixer.music.load("music/GraveYard.mp3")
         pygame.mixer.music.play()  # Play the music sound
