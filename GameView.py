@@ -11,7 +11,6 @@ class GameView:
         self.root = tk.Tk()
         self.root.wm_attributes("-topmost", 1)
         self.topLbl = None
-        # self.slaves = SlavesAndJugs
         self.root.title("Software Engineering Seminar")
         self.root.geometry("1000x700")
         self.root.resizable(False, False)
@@ -37,13 +36,13 @@ class GameView:
 
         self.btn_option1 = tk.Button(self.my_gui, text="Guess the birthday", fg='#009999', bg='#ffcc99',
                                      highlightbackground="blue",
-                                     relief="raised", bd=10, padx=5, pady=5, font=('Sans Serif', 20, 'bold'),
+                                     relief="raised", bd=10, padx=5, pady=5, font=('Cooper Black', 20, 'bold'),
                                      image=self.birthday, compound='bottom',
                                      command=lambda: [self.my_gui.pack_forget(), self.create_gui(self.birthday_canvas),
                                                       self.make_grid(), self.playBirthday()])
         self.btn_option2 = tk.Button(self.my_gui, text="The poisoned jug", fg='#00FF00', bg="black",
                                      highlightbackground="orange",
-                                     relief="raised", bd=10, padx=10, pady=16, font=('Sans Serif', 20, 'bold'),
+                                     relief="raised", bd=10, padx=10, pady=16, font=('Cooper Black', 20, 'bold'),
                                      image=self.slaves, compound='bottom',
                                      command=lambda: [self.my_gui.pack_forget(), self.make_grid(),
                                                       self.playSlavesGame()])
@@ -72,13 +71,13 @@ class GameView:
 
         self.btn_option1 = tk.Button(self.my_gui, text="Guess the birthday", fg='#009999', bg='#ffcc99',
                                      highlightbackground="blue",
-                                     relief="raised", bd=10, padx=5, pady=5, font=('Sans Serif', 20, 'bold'),
+                                     relief="raised", bd=10, padx=5, pady=5, font=('Cooper Black', 20, 'bold'),
                                      image=self.birthday, compound='bottom',
                                      command=lambda: [self.my_gui.pack_forget(), self.create_gui(self.birthday_canvas),
                                                       self.make_grid(), self.playBirthday()])
         self.btn_option2 = tk.Button(self.my_gui, text="The poisoned jug", fg='#00FF00', bg="black",
                                      highlightbackground="orange",
-                                     relief="raised", bd=10, padx=10, pady=16, font=('Sans Serif', 20, 'bold'),
+                                     relief="raised", bd=10, padx=10, pady=16, font=('Cooper Black', 20, 'bold'),
                                      image=self.slaves, compound='bottom',
                                      command=lambda: [self.my_gui.pack_forget(), self.create_gui(self.slaves_canvas),
                                                       self.playSlavesGame()])

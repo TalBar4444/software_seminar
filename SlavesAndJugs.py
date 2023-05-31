@@ -15,7 +15,7 @@ class SlavesAndJugs(tk.Tk):
              - canvas (tk.Canvas): The canvas on which the game is displayed.
              - game_view: The game view object.
         """
-        self.num_of_jugs_in_frame = 500
+        self.num_of_jugs_in_frame = 0
         self.animated_image = None
         self.game_view = game_view
         self.base_bg = tk.PhotoImage(file="images/slavesBG.png")
@@ -114,10 +114,7 @@ class SlavesAndJugs(tk.Tk):
         for i, jug in enumerate(self.jugs):
             self.canvas_jugs.itemconfig(jug, fill=self.jug_fill, outline=self.jug_outline)
 
-    # def initialize_data(self):
 
-            #self.canvas_jugs.forget()
-            #self._create_animation()
 
     def reset_data(self):
         self.count_dead = 0
@@ -125,14 +122,12 @@ class SlavesAndJugs(tk.Tk):
             self.canvas.delete(self.slave_num_txt[i])
             self.canvas.delete(self.dead_slave_txt[i])
             self.canvas.delete(self.alive_slave_txt[i])
-        # for item in self.canvas_jugs.find_withtag("slave"):
-        #     self.canvas_jugs.delete(item)
+
 
         for item in self.canvas.find_withtag("rectangle"):
             self.canvas.delete(item)
 
-        #self.num_of_jugs_lbl.place_forget()
-        #self.lbl_result.place_forget()
+
         self.lbl_total.place_forget()
         self.options_frame.pack_forget()
         self.back_to_menu_btn.place_forget()
@@ -140,21 +135,21 @@ class SlavesAndJugs(tk.Tk):
     def show_primary_details(self, poisoned_jug):
 
         self.num_of_jugs_lbl.config(text=f"Total number of jugs: {self.jugs_num}")
-        self.num_of_jugs_lbl.place(relx=0.76, rely=0.17)
+        self.num_of_jugs_lbl.place(relx=0.75, rely=0.17)
 
         self.lbl_result.config(text=f"The Poisoned Jug: {poisoned_jug}")
-        self.lbl_result.place(relx=0.78, rely=0.22)
+        self.lbl_result.place(relx=0.76, rely=0.22)
 
         self.lbl_result_binary.config(text="Binary: {}".format(bin(poisoned_jug)[2:].zfill(self.slaves_num)))
         self.lbl_result_binary.place(relx=0.79, rely=0.26)
 
-        self.lbl_jug_num_in_frame.config(text=f"Number of jugs in frame: {self.num_of_jugs_in_frame}")
-        self.lbl_jug_num_in_frame.place(relx=0.75,rely=0.47)
+
 
     def find_poisoned_jug(self):
         """
             Starts the process of finding the poisoned jug.
         """
+        self.num_of_jugs_in_frame = 0
         self.jugs_entry.config(foreground='black')
         self.jugs_label.config(foreground='black')
         input_jugs = self.jugs_entry.get()
@@ -178,9 +173,7 @@ class SlavesAndJugs(tk.Tk):
         else:
             self.jugs_num = int(input_jugs)
             self.slaves_num = int(math.log2(self.jugs_num)) + 1
-            if self.jugs_num % 2 != 0:
-                self.num_of_jugs_in_frame = int(self.jugs_num / 2) + 1
-            # self.num_of_jugs_lbl.config(text=f"Amount of jugs: {self.jugs_num/2}")
+
             self._create_animation()
             self.speed = int(input_speed)
 
@@ -249,10 +242,10 @@ class SlavesAndJugs(tk.Tk):
                 self.canvas.update()  # Update the canvas to show the changes
                 self.canvas.after((animation_duration // self.speed) // num_steps)  # Delay between steps
 
-            wine1_img = tk.PhotoImage(file="images/spilling1.png")
-            wine2_img = tk.PhotoImage(file="images/spilling2.png")
-            wine3_img = tk.PhotoImage(file="images/spilling3.png")
-            wine4_img = tk.PhotoImage(file="images/spilling4.png")
+            wine1_img = tk.PhotoImage(file="images/jug1.png")
+            wine2_img = tk.PhotoImage(file="images/jug2.png")
+            wine3_img = tk.PhotoImage(file="images/jug3.png")
+            wine4_img = tk.PhotoImage(file="images/jug4.png")
 
             # create image objects on the canvas
             wine_images = [wine1_img, wine2_img, wine3_img, wine4_img]
@@ -274,7 +267,7 @@ class SlavesAndJugs(tk.Tk):
             self.canvas.coords(self.canvas.find_all()[0])
 
             # Set the status of the slave to dead:  # Add the dead slave image on top
-            if slave_status[self.slaves_num - i - 1] == 1:
+            if slave_status[i] == 1:
                 self.dead_image = self.canvas.create_image(final_x, final_y, image=dead_image, anchor="nw")
                 self.canvas.update()
                 time.sleep(2)
@@ -302,7 +295,9 @@ class SlavesAndJugs(tk.Tk):
                 jug = self.canvas_jugs.create_polygon(points, fill=self.jug_fill, outline=self.jug_outline)
                 self.canvas_jugs.create_text(x1 + self.jug_width // 2, y1 + self.jug_height // 2,
                                              text=str(jug_number), font=("Arial", 8), fill="white")
+
                 self.all_jugs.append(jug)
+
 
         self.canvas_jugs.update_idletasks()
         self.canvas_jugs.config(scrollregion=self.canvas_jugs.bbox("all"))
@@ -324,7 +319,7 @@ class SlavesAndJugs(tk.Tk):
             y_pos = 540
 
             # define shaped background to the text
-            self.slave_num_txt[i] = self.canvas.create_text(x_pos, y_pos, text=f"Slave {self.slaves_num - i}",
+            self.slave_num_txt[i] = self.canvas.create_text(x_pos, y_pos, text=f"Slave {i+1}",
                                                             fill=text_color, font=self.bold_font, tags="slave")
             s = self.canvas.create_rectangle(self.canvas.bbox(self.slave_num_txt[i]), fill="white",tags="rectangle")
             self.canvas.tag_lower(s, self.slave_num_txt[i])
@@ -340,10 +335,12 @@ class SlavesAndJugs(tk.Tk):
 
         self.options_frame.pack(pady=100)
         self.back_to_menu_btn.place(relx=0.95, rely=0.08, anchor="center")
-        #self.lbl_result.place(relx=0.15, rely=0.65)
-        #self.lbl_result.config(text=f"The poisoned Jug: {poisoned_jug}")
-        self.lbl_total.place(relx=0.14, rely=0.71)
+
+        self.lbl_total.place(relx=0.11, rely=0.71)
         self.lbl_total.config(text=f"Total slaves dead: {self.count_dead} out of {self.slaves_num} slaves")
+        self.num_of_jugs_in_frame = self.jugs_num
+        self.lbl_jug_num_in_frame.config(text=f"Number of jugs in frame: {self.num_of_jugs_in_frame}")
+        self.lbl_jug_num_in_frame.place(relx=0.75, rely=0.47)
 
     def back_to_options(self):
         """
@@ -369,31 +366,38 @@ class SlavesAndJugs(tk.Tk):
         self.canvas_jugs.config(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
         v_scrollbar.config(command=self.canvas_jugs.yview)
         h_scrollbar.config(command=self.canvas_jugs.xview)
-
+        count_i = 0
+        count_j = 0
         for i in range(self.lines):
             for j in range(self.column):
-                x1 = self.spacing + j * (self.jug_width + self.spacing)
-                y1 = self.spacing + i * (self.jug_height + self.spacing)
-                x2 = x1 + self.jug_width
-                y2 = y1 + self.jug_height
                 jug_number = i * self.column + j + 1
                 if jug_number > self.jugs_num:
                     break
-                # Define the jug shape
-                points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2,
-                          x1 + self.jug_width * 0.8, y2, x2,
-                          y1 + self.jug_height * 0.6, x2, y1]
+                formatted_binary = format(jug_number, '0{}b'.format(self.slaves_num))
 
-                binary = bin(jug_number)[2:]
-
-                if number_of_slave < 1 or number_of_slave > len(binary):
+                if number_of_slave < 1 or number_of_slave > len(formatted_binary):
                     pass
-                elif binary[-number_of_slave] == '1':
+                elif formatted_binary[number_of_slave-1] == '1':
+                    x1 = self.spacing + count_j * (self.jug_width + self.spacing)
+                    y1 = self.spacing + count_i * (self.jug_height + self.spacing)
+                    x2 = x1 + self.jug_width
+                    y2 = y1 + self.jug_height
+                    points = [x1, y1, x1, y1 + self.jug_height * 0.6, x1 + self.jug_width * 0.2, y2,
+                              x1 + self.jug_width * 0.8, y2, x2,
+                              y1 + self.jug_height * 0.6, x2, y1]
                     jug = self.canvas_jugs.create_polygon(points, fill=self.jug_fill, outline=self.jug_outline)
                     self.canvas_jugs.create_text(x1 + self.jug_width // 2, y1 + self.jug_height // 2,
                                                  text=str(jug_number), font=("Arial", 8), fill="white")
+                    self.num_of_jugs_in_frame = self.num_of_jugs_in_frame + 1
 
                     self.jugs.append(jug)
+                    count_j = count_j+1
+                    if count_j > self.column:
+                        count_j = 0
+                        count_i = count_i + 1
 
+        self.lbl_jug_num_in_frame.config(text=f"Number of jugs in frame: {self.num_of_jugs_in_frame}")
+        self.lbl_jug_num_in_frame.place(relx=0.75, rely=0.47)
+        self.num_of_jugs_in_frame = 0
         self.canvas_jugs.update_idletasks()
         self.canvas_jugs.config(scrollregion=self.canvas_jugs.bbox("all"))
